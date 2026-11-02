@@ -190,17 +190,45 @@
         .music-btn { background: none; border: none; font-size: 1.4em; cursor: pointer; transition: 0.3s; padding: 0; margin: 0; }
         .music-btn:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px #ccff00); }
 
-        /* 📱 SOCIAL BUTTONS (TikTok & WhatsApp) 📱 */
-        .social-float {
-            position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000;
+        /* 📱 FULL-WIDTH SOCIAL BARS (Inside Join & Rules) 📱 */
+        .social-bar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
         }
-        .social-btn {
-            background: rgba(0, 0, 0, 0.85); border: 2px solid #ccff00; color: #ccff00;
-            padding: 8px 15px; border-radius: 20px; font-family: 'Oswald', sans-serif;
-            text-decoration: none; font-size: 0.9em; display: flex; align-items: center; gap: 5px;
-            box-shadow: 0 0 10px rgba(204, 255, 0, 0.3); transition: 0.3s;
+        .social-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-family: 'Oswald', sans-serif;
+            text-decoration: none;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
-        .social-btn:hover { background: #ccff00; color: #000; transform: scale(1.05); }
+        .social-bar:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+        .tiktok-bar {
+            background-color: #000000;
+            color: #ffffff;
+            border: 2px solid #333;
+        }
+        .whatsapp-bar-1 {
+            background-color: #25D366;
+            color: #000000;
+        }
+        .whatsapp-bar-2 {
+            background-color: #25D366;
+            color: #000000;
+        }
     </style>
 </head>
 <body>
@@ -214,13 +242,6 @@
     <div class="music-widget">
         <span>🎵 Music:</span>
         <button class="music-btn" id="play-pause-btn" onclick="toggleMusic()" title="Play/Pause">🔇</button>
-    </div>
-
-    <!-- 📱 Social Floating Buttons (TikTok & WhatsApp Leaders) -->
-    <div class="social-float">
-        <a href="https://www.tiktok.com/@YOUR_TIKTOK_PAGE" target="_blank" class="social-btn">🔥 TikTok</a>
-        <a href="https://wa.me/+947xxxxxxxx" target="_blank" class="social-btn">💬 Leader 1</a>
-        <a href="https://wa.me/+947xxxxxxxx" target="_blank" class="social-btn">💬 Leader 2</a>
     </div>
 
     <!-- Effect Layer Container -->
@@ -415,6 +436,19 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <li>Never mess with other guild's members</li>
                 <li>Respect Guildmates & All other players.</li>
             </ul>
+
+            <!-- 📱 Social Full-Width Bars inside Join & Rules 📱 -->
+            <div class="social-bar-container">
+                <a href="https://www.tiktok.com/@exjrofficial?_r=1&_t=ZS-9B4kylkEwq2" target="_blank" class="social-bar tiktok-bar">
+                    🎵 Visit Our TikTok Page
+                </a>
+                <a href="https://wa.me/+94701883223" target="_blank" class="social-bar whatsapp-bar-1">
+                    💬 Contact Leader Via Whatsapp
+                </a>
+                <a href="https://wa.me/+94756260806" target="_blank" class="social-bar whatsapp-bar-2">
+                    💬 Contact Acting Leader Via Whatsapp
+                </a>
+            </div>
         </div>
     </div>
 
