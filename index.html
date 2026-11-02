@@ -120,6 +120,42 @@
         .section-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* ✨ LIQUID GLASS SCROLL-IN SEARCH BAR ✨ */
+        .liquid-search-box {
+            margin: 20px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .liquid-search-box.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .liquid-search-input {
+            width: 100%;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.1em;
+            outline: none;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+        .liquid-search-input::placeholder {
+            color: #aaa;
+            text-transform: uppercase;
+        }
+        .liquid-search-input:focus {
+            border-color: var(--theme-color);
+            box-shadow: 0 0 15px var(--theme-glow), 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
         /* Team Cards & Tables */
         .team-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 40px; margin-top: 20px; }
         .team-card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; width: 160px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.5); transition: 0.3s; cursor: pointer; }
@@ -269,6 +305,16 @@
             background-color: #25D366;
             color: #000000;
         }
+
+        /* Mobile clean view for Live stream page */
+        @media screen and (max-width: 768px) {
+            body.viewing-live .effect-controls,
+            body.viewing-live .music-widget,
+            body.viewing-live .theme-switcher,
+            body.viewing-live header {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -388,6 +434,12 @@ If you are passionate about gaming and eager to become a part of our growing leg
         </div>
             <h2><span class="neon-text">|</span> Guild Roster (Live Stats)</h2>
             <p>මේ දත්ත කෙලින්ම අපේ Google Sheet එකෙන් Auto Update වෙනවා.</p>
+            
+            <!-- ✨ Liquid Glass Search Bar for Roster -->
+            <div id="search-box-players" class="liquid-search-box">
+                <input type="text" id="playerSearchInput" class="liquid-search-input" placeholder="🔍 Search Player by Name or UID..." onkeyup="filterRosterTable()">
+            </div>
+
             <table>
                 <thead>
                     <tr>
@@ -408,6 +460,12 @@ If you are passionate about gaming and eager to become a part of our growing leg
         <div id="wars" class="section-content">
             <h2><span class="neon-text">|</span> Guild Wars Top Scorers</h2>
             <p>මෙම ලකුණු සටහන අලුත් Google Sheet එක මගින් Auto Update වේ.</p>
+            
+            <!-- ✨ Liquid Glass Search Bar for Guild Wars -->
+            <div id="search-box-wars" class="liquid-search-box">
+                <input type="text" id="warSearchInput" class="liquid-search-input" placeholder="🔍 Search Hero by Player Name..." onkeyup="filterWarTable()">
+            </div>
+
             <table>
                 <thead>
                     <tr>
@@ -542,6 +600,60 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
+        // ✨ Scroll Reveal Animation for Liquid Glass Search Bars ✨
+        window.addEventListener('scroll', function() {
+            const boxes = document.querySelectorAll('.liquid-search-box');
+            boxes.forEach(box => {
+                const boxPosition = box.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.15;
+                if(boxPosition < screenPosition) {
+                    box.classList.add('reveal');
+                }
+            });
+        });
+
+        // 🔍 Filter Roster Table Function
+        function filterRosterTable() {
+            const input = document.getElementById('playerSearchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('roster-body');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < tr.length; i++) {
+                const tdName = tr[i].getElementsByTagName('td')[0];
+                const tdUid = tr[i].getElementsByTagName('td')[1];
+                if (tdName || tdUid) {
+                    const nameText = tdName.textContent || tdName.innerText;
+                    const uidText = tdUid.textContent || tdUid.innerText;
+                    if (nameText.toLowerCase().indexOf(filter) > -1 || uidText.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        // 🔍 Filter Guild Wars Table Function
+        function filterWarTable() {
+            const input = document.getElementById('warSearchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('war-body');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < tr.length; i++) {
+                const tdName = tr[i].getElementsByTagName('td')[0];
+                if (tdName) {
+                    const nameText = tdName.textContent || tdName.innerText;
+                    if (nameText.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
         // 🎨 Theme Switcher Logic 🎨
         function setTheme(themeName) {
             document.body.className = ''; 
