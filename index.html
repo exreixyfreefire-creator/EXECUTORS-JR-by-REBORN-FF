@@ -59,7 +59,31 @@
         p.subtitle {
             color: #aaaaaa;
             font-size: 1.1em;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+        }
+
+        /* 🕒 SRI LANKA DIGITAL CLOCK STYLE 🕒 */
+        .guild-clock {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--theme-color);
+            padding: 8px 20px;
+            border-radius: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 15px var(--theme-glow);
+            font-family: 'Oswald', sans-serif;
+            letter-spacing: 1px;
+            font-size: 1.1em;
+            color: var(--theme-color);
+            text-transform: uppercase;
+        }
+        .guild-clock span {
+            color: #ffffff;
+            font-weight: bold;
         }
 
         /* Navigation Tabs Design */
@@ -305,16 +329,6 @@
             background-color: #25D366;
             color: #000000;
         }
-
-        /* Mobile clean view for Live stream page */
-        @media screen and (max-width: 768px) {
-            body.viewing-live .effect-controls,
-            body.viewing-live .music-widget,
-            body.viewing-live .theme-switcher,
-            body.viewing-live header {
-                display: none !important;
-            }
-        }
     </style>
 </head>
 <body>
@@ -359,6 +373,11 @@
         <h1>Executors Junior</h1>
         <p class="subtitle">The Next Generation of Legends</p>
         
+        <!-- 🕒 Sri Lanka Live Clock -->
+        <div class="guild-clock">
+            🕒 SL Time: <span id="srilanka-clock">00:00:00 AM</span>
+        </div>
+
         <div class="tab-container">
             <button class="tab-btn active" onclick="openTab('about')">About Guild</button>
             <button class="tab-btn" onclick="openTab('players')">Player Details</button>
@@ -600,6 +619,15 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
+        // 🕒 Sri Lanka Live Clock Script 🕒
+        function updateSriLankaClock() {
+            const options = { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            const timeString = new Intl.DateTimeFormat('en-US', options).format(new Date());
+            document.getElementById('srilanka-clock').innerText = timeString;
+        }
+        setInterval(updateSriLankaClock, 1000);
+        updateSriLankaClock();
+
         // ✨ Scroll Reveal Animation for Liquid Glass Search Bars ✨
         window.addEventListener('scroll', function() {
             const boxes = document.querySelectorAll('.liquid-search-box');
