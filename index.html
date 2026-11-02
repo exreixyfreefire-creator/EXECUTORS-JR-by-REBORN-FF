@@ -16,6 +16,20 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
         
+        /* THEME VARIABLES (Default: Lime Green) */
+        :root {
+            --theme-color: #ccff00;
+            --theme-glow: rgba(204, 255, 0, 0.5);
+        }
+        body.theme-red {
+            --theme-color: #ff3333;
+            --theme-glow: rgba(255, 51, 51, 0.5);
+        }
+        body.theme-blue {
+            --theme-color: #00ffff;
+            --theme-glow: rgba(0, 255, 255, 0.5);
+        }
+
         body {
             background-color: #0d0d0d;
             color: #ffffff;
@@ -33,12 +47,12 @@
         .guild-logo {
             max-width: 150px;
             margin-bottom: 10px;
-            filter: drop-shadow(0 0 10px rgba(204, 255, 0, 0.4));
+            filter: drop-shadow(0 0 10px var(--theme-glow));
         }
         h1 {
             font-size: 3em;
-            color: #ccff00;
-            text-shadow: 0 0 10px rgba(204, 255, 0, 0.5);
+            color: var(--theme-color);
+            text-shadow: 0 0 10px var(--theme-glow);
             margin: 0;
             text-transform: uppercase;
         }
@@ -73,13 +87,13 @@
             position: relative;
             z-index: 10;
         }
-        .tab-btn:hover { border-color: #ccff00; color: #ccff00; }
+        .tab-btn:hover { border-color: var(--theme-color); color: var(--theme-color); }
         .tab-btn.active {
-            background-color: #ccff00;
+            background-color: var(--theme-color);
             color: #000;
             font-weight: bold;
-            border-color: #ccff00;
-            box-shadow: 0 0 10px rgba(204, 255, 0, 0.5);
+            border-color: var(--theme-color);
+            box-shadow: 0 0 10px var(--theme-glow);
         }
 
         /* Sections Design */
@@ -97,22 +111,22 @@
         /* Team Cards & Tables */
         .team-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 40px; margin-top: 20px; }
         .team-card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; width: 160px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.5); transition: 0.3s; cursor: pointer; }
-        .team-card:hover { border-color: #ccff00; transform: translateY(-5px); }
-        .team-card img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #ccff00; margin-bottom: 15px; }
+        .team-card:hover { border-color: var(--theme-color); transform: translateY(-5px); }
+        .team-card img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--theme-color); margin-bottom: 15px; }
         .team-card h3 { margin: 0 0 5px 0; color: #fff; font-size: 1.1em; }
-        .team-card .role { color: #ccff00; font-weight: bold; margin: 5px 0; text-transform: uppercase; font-size: 0.8em; }
+        .team-card .role { color: var(--theme-color); font-weight: bold; margin: 5px 0; text-transform: uppercase; font-size: 0.8em; }
         .team-card .uid { color: #aaa; font-size: 0.8em; margin: 0; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #1a1a1a; border-radius: 8px; overflow: hidden; }
         th, td { padding: 15px; text-align: center; border-bottom: 1px solid #333; }
-        th { background-color: #ccff00; color: #000; font-weight: bold; text-transform: uppercase; }
+        th { background-color: var(--theme-color); color: #000; font-weight: bold; text-transform: uppercase; }
         tr:hover { background-color: #2a2a2a; }
-        .neon-text { color: #ccff00; }
+        .neon-text { color: var(--theme-color); }
         .points-text { color: #00ff00; font-weight: bold; font-size: 1.2em; }
 
         /* Custom Lists */
-        .custom-box { background: #1a1a1a; border-left: 4px solid #ccff00; padding: 20px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
-        .custom-box h3 { margin: 0 0 10px 0; color: #ccff00; }
+        .custom-box { background: #1a1a1a; border-left: 4px solid var(--theme-color); padding: 20px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
+        .custom-box h3 { margin: 0 0 10px 0; color: var(--theme-color); }
         .custom-box p { margin: 0; color: #ccc; }
         ul.rules-list { list-style: none; padding: 0; }
         ul.rules-list li { background: #1a1a1a; margin-bottom: 10px; padding: 15px; border-radius: 5px; border: 1px solid #333; display: flex; align-items: center; gap: 15px; }
@@ -120,14 +134,14 @@
 
         /* 🔴 Tournament Folders CSS 🔴 */
         .folder-btn {
-            background-color: #1a1a1a; color: #ccff00; border: 1px solid #333; padding: 15px 20px;
+            background-color: #1a1a1a; color: var(--theme-color); border: 1px solid #333; padding: 15px 20px;
             width: 100%; text-align: left; font-size: 1.2em; font-family: 'Oswald', sans-serif;
             cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.3s;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .folder-btn:hover { background-color: #2a2a2a; border-color: #ccff00; }
+        .folder-btn:hover { background-color: #2a2a2a; border-color: var(--theme-color); }
         .folder-content {
-            background-color: #111; border-left: 4px solid #ccff00; padding: 20px;
+            background-color: #111; border-left: 4px solid var(--theme-color); padding: 20px;
             margin-bottom: 20px; border-radius: 0 0 8px 8px; display: none; animation: fadeIn 0.3s ease-in-out;
         }
         .folder-content p { margin: 8px 0; color: #ccc; font-family: sans-serif; }
@@ -137,58 +151,72 @@
             width: 250px; height: 150px; object-fit: cover; border-radius: 8px;
             border: 2px solid #444; transition: 0.3s;
         }
-        .match-photos img:hover { border-color: #ccff00; transform: scale(1.05); }
+        .match-photos img:hover { border-color: var(--theme-color); transform: scale(1.05); }
 
         /* Modal (Popup) */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
-        .modal-content { background-color: #111; margin: 5% auto; padding: 30px; border: 2px solid #ccff00; border-radius: 12px; width: 85%; max-width: 650px; color: #fff; position: relative; animation: popup 0.3s; }
+        .modal-content { background-color: #111; margin: 5% auto; padding: 30px; border: 2px solid var(--theme-color); border-radius: 12px; width: 85%; max-width: 650px; color: #fff; position: relative; animation: popup 0.3s; }
         @keyframes popup { from {opacity: 0; transform: scale(0.8);} to {opacity: 1; transform: scale(1);} }
         .close-btn { color: #aaa; position: absolute; top: 15px; right: 20px; font-size: 32px; font-weight: bold; cursor: pointer; line-height: 1; }
         .close-btn:hover { color: #ff3333; }
         .modal-header { display: flex; align-items: center; gap: 20px; border-bottom: 1px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
-        .modal-header img { width: 120px; height: 120px; border-radius: 15px; border: 3px solid #ccff00; object-fit: cover; }
-        .modal-header h2 { margin: 0 0 5px 0; font-size: 2.2em; }
-        .modal-body h3 { color: #ccff00; margin-bottom: 10px; border-left: 3px solid #ccff00; padding-left: 10px; font-size: 1.2em; }
+        .modal-header img { width: 120px; height: 120px; border-radius: 15px; border: 3px solid var(--theme-color); object-fit: cover; }
+        .modal-header h2 { margin: 0 0 5px 0; font-size: 2.2em; color: var(--theme-color); }
+        .modal-body h3 { color: var(--theme-color); margin-bottom: 10px; border-left: 3px solid var(--theme-color); padding-left: 10px; font-size: 1.2em; }
         .modal-desc { color: #ddd; line-height: 1.6; margin-bottom: 25px; font-family: sans-serif; }
         .modal-gallery { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
         .modal-gallery img { width: 180px; height: 120px; border-radius: 8px; object-fit: cover; border: 1px solid #444; transition: 0.3s; }
-        .modal-gallery img:hover { border-color: #ccff00; transform: scale(1.05); }
+        .modal-gallery img:hover { border-color: var(--theme-color); transform: scale(1.05); }
 
         /* BACKGROUND EFFECTS CSS */
         .effect-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; overflow: hidden; transition: 0.5s; }
-        .sunshine { background: radial-gradient(circle at 80% -20%, rgba(255, 230, 0, 0.15) 0%, transparent 60%); }
-        .raindrop { position: absolute; background: rgba(255, 255, 255, 0.2); width: 1px; height: 40px; animation: rainDropAnim linear infinite; }
+        .sunshine { background: radial-gradient(circle at 80% -20%, rgba(255, 230, 0, 0.25) 0%, transparent 70%); }
+        .raindrop { position: absolute; background: rgba(255, 255, 255, 0.35); width: 1.5px; height: 50px; animation: rainDropAnim linear infinite; }
         @keyframes rainDropAnim { 0% { transform: translateY(-10vh); } 100% { transform: translateY(110vh); } }
-        .stormy { animation: thunderFlash 6s infinite; }
-        @keyframes thunderFlash { 0%, 95%, 98% { background-color: transparent; } 96%, 99% { background-color: rgba(255, 255, 255, 0.1); } }
-        .seasonal-particle { position: absolute; top: -10%; font-size: 1.2em; opacity: 0.5; animation: fall linear infinite; }
-        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+        .stormy { animation: thunderFlash 5s infinite; }
+        @keyframes thunderFlash { 0%, 95%, 98% { background-color: transparent; } 96%, 99% { background-color: rgba(255, 255, 255, 0.2); } }
+        .seasonal-particle { position: absolute; top: -10%; font-size: 1.5em; opacity: 0.8; animation: fall linear infinite; }
+        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0.2; } }
 
-        /* FLOATING EFFECT CONTROLS */
+        /* FLOATING EFFECT CONTROLS (Fixed Position) */
         .effect-controls {
             position: fixed; bottom: 20px; right: 20px; background: rgba(0, 0, 0, 0.85);
-            border: 2px solid #ccff00; border-radius: 30px; padding: 10px 15px;
+            border: 2px solid var(--theme-color); border-radius: 30px; padding: 10px 15px;
             display: flex; align-items: center; gap: 12px; z-index: 1000;
-            box-shadow: 0 0 10px rgba(204, 255, 0, 0.3);
+            box-shadow: 0 0 10px var(--theme-glow);
         }
-        .effect-controls span { color: #ccff00; font-family: 'Oswald', sans-serif; font-size: 0.9em; text-transform: uppercase; }
+        .effect-controls span { color: var(--theme-color); font-family: 'Oswald', sans-serif; font-size: 0.9em; text-transform: uppercase; }
         .effect-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.3s; padding: 0; margin: 0; }
-        .effect-btn:hover { transform: scale(1.3); filter: drop-shadow(0 0 5px #ccff00); }
+        .effect-btn:hover { transform: scale(1.3); filter: drop-shadow(0 0 5px var(--theme-color)); }
 
         /* Hidden effects list toggle */
         .effects-list { display: none; align-items: center; gap: 10px; }
         .effects-list.show { display: flex; }
 
-        /* 🎵 MUSIC PLAYER WIDGET CSS 🎵 */
+        /* 🎵 MUSIC PLAYER WIDGET (Fixed Position) 🎵 */
         .music-widget {
             position: fixed; bottom: 20px; left: 20px; background: rgba(0, 0, 0, 0.85);
-            border: 2px solid #ccff00; border-radius: 30px; padding: 8px 15px;
+            border: 2px solid var(--theme-color); border-radius: 30px; padding: 8px 15px;
             display: flex; align-items: center; gap: 10px; z-index: 1000;
-            box-shadow: 0 0 10px rgba(204, 255, 0, 0.3);
+            box-shadow: 0 0 10px var(--theme-glow);
         }
-        .music-widget span { color: #ccff00; font-family: 'Oswald', sans-serif; font-size: 0.9em; text-transform: uppercase; }
+        .music-widget span { color: var(--theme-color); font-family: 'Oswald', sans-serif; font-size: 0.9em; text-transform: uppercase; }
         .music-btn { background: none; border: none; font-size: 1.4em; cursor: pointer; transition: 0.3s; padding: 0; margin: 0; }
-        .music-btn:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px #ccff00); }
+        .music-btn:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px var(--theme-color)); }
+
+        /* 🎨 THEME SWITCHER WIDGET (Fixed Position Top-Left) 🎨 */
+        .theme-switcher {
+            position: fixed; top: 20px; left: 20px; background: rgba(0, 0, 0, 0.85);
+            border: 2px solid var(--theme-color); border-radius: 20px; padding: 6px 12px;
+            display: flex; align-items: center; gap: 8px; z-index: 1000;
+            box-shadow: 0 0 10px var(--theme-glow);
+        }
+        .theme-switcher span { color: var(--theme-color); font-size: 0.8em; font-family: 'Oswald', sans-serif; }
+        .theme-dot {
+            width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid #fff;
+            transition: 0.3s;
+        }
+        .theme-dot:hover { transform: scale(1.2); }
 
         /* 📱 FULL-WIDTH SOCIAL BARS (Inside Join & Rules) 📱 */
         .social-bar-container {
@@ -232,6 +260,14 @@
     </style>
 </head>
 <body>
+
+    <!-- 🎨 Theme Switcher Widget -->
+    <div class="theme-switcher">
+        <span>Theme:</span>
+        <div class="theme-dot" style="background-color: #ccff00;" onclick="setTheme('lime')" title="Lime Green"></div>
+        <div class="theme-dot" style="background-color: #ff3333;" onclick="setTheme('red')" title="Fiery Red"></div>
+        <div class="theme-dot" style="background-color: #00ffff;" onclick="setTheme('blue')" title="Cyber Blue"></div>
+    </div>
 
     <!-- 🎵 Background Music Audio Element & Widget (Bottom Left) -->
     <audio id="bg-music" loop>
@@ -460,7 +496,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             <img id="modal-img" src="" alt="Profile Picture">
             <div>
                 <h2 id="modal-name" class="neon-text">NAME</h2>
-                <p id="modal-role" class="role" style="color: #ccff00; font-weight: bold; margin: 5px 0;">Role</p>
+                <p id="modal-role" class="role" style="color: var(--theme-color); font-weight: bold; margin: 5px 0;">Role</p>
                 <p id="modal-uid" class="uid" style="color: #aaa; margin: 0;">UID: 123</p>
             </div>
         </div>
@@ -473,16 +509,26 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
+        // 🎨 Theme Switcher Logic 🎨
+        function setTheme(themeName) {
+            document.body.className = ''; 
+            if (themeName === 'red') {
+                document.body.classList.add('theme-red');
+            } else if (themeName === 'blue') {
+                document.body.classList.add('theme-blue');
+            }
+        }
+
         // 🎵 Music Player & Mute/Unmute Control Logic 🎵
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const btn = document.getElementById('play-pause-btn');
             if (music.paused) {
                 music.play();
-                btn.innerText = '🔊'; // සින්දුව ප්ලේ වන විට ස්පීකර් අයිකන් එක පෙන්වයි
+                btn.innerText = '🔊'; 
             } else {
                 music.pause();
-                btn.innerText = '🔇'; // මියුට් කළ විට මියුට් අයිකන් එක පෙන්වයි
+                btn.innerText = '🔇'; 
             }
         }
 
@@ -547,7 +593,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
                         html += `<tr>
                             <td style="font-weight: bold;">${cols[0].replace(/"/g, '')}</td>
                             <td style="color: #aaa;">${cols[1].replace(/"/g, '')}</td>
-                            <td style="color: #ccff00;">${cols[2].replace(/"/g, '')}</td>
+                            <td style="color: var(--theme-color);">${cols[2].replace(/"/g, '')}</td>
                             <td>${cols[3].replace(/"/g, '')}</td>
                             <td>${cols[4].replace(/"/g, '')}</td>
                         </tr>`;
@@ -585,7 +631,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 document.getElementById('war-body').innerHTML = '<tr><td colspan="2" style="color: #ff3333;">කරුණාකර අලුත් Sheet එකේ CSV Link එක කෝඩ් එකට ඇතුලත් කරන්න.</td></tr>';
             });
 
-        // MANUAL EFFECT LOGIC
+        // MANUAL EFFECT LOGIC (Increased Concentration/Density)
         function setEffect(type) {
             const container = document.getElementById('effect-container');
             container.innerHTML = ''; 
@@ -595,31 +641,31 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 container.classList.add('sunshine');
             } else if (type === 'rain' || type === 'storm') {
                 if (type === 'storm') container.classList.add('stormy');
-                for (let i = 0; i < 40; i++) {
+                for (let i = 0; i < 70; i++) { // Increased drop count
                     let drop = document.createElement('div');
                     drop.className = 'raindrop';
                     drop.style.left = Math.random() * 100 + 'vw';
-                    drop.style.animationDuration = (Math.random() * 0.5 + 0.6) + 's';
+                    drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
                     drop.style.animationDelay = Math.random() * 2 + 's';
                     container.appendChild(drop);
                 }
             } else if (type === 'snow') {
-                for (let i = 0; i < 30; i++) {
+                for (let i = 0; i < 50; i++) { // Increased particle count
                     let particle = document.createElement('div');
                     particle.className = 'seasonal-particle';
                     particle.innerText = '❄️';
                     particle.style.left = Math.random() * 100 + 'vw';
-                    particle.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                    particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
                     particle.style.animationDelay = Math.random() * 5 + 's';
                     container.appendChild(particle);
                 }
             } else if (type === 'flower') {
-                for (let i = 0; i < 25; i++) {
+                for (let i = 0; i < 40; i++) { // Increased flower count
                     let particle = document.createElement('div');
                     particle.className = 'seasonal-particle';
                     particle.innerText = '🌸';
                     particle.style.left = Math.random() * 100 + 'vw';
-                    particle.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                    particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
                     particle.style.animationDelay = Math.random() * 5 + 's';
                     container.appendChild(particle);
                 }
