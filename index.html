@@ -174,9 +174,31 @@
         .effect-controls span { color: #ccff00; font-family: 'Oswald', sans-serif; font-size: 0.9em; text-transform: uppercase; }
         .effect-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.3s; padding: 0; margin: 0; }
         .effect-btn:hover { transform: scale(1.3); filter: drop-shadow(0 0 5px #ccff00); }
+
+        /* 🎵 MUSIC PLAYER WIDGET CSS 🎵 */
+        .music-widget {
+            position: fixed; bottom: 20px; left: 20px; background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #ccff00; border-radius: 30px; padding: 8px 15px;
+            display: flex; align-items: center; gap: 10px; z-index: 1000;
+            box-shadow: 0 0 10px rgba(204, 255, 0, 0.3);
+        }
+        .music-widget span { color: #ccff00; font-family: 'Oswald', sans-serif; font-size: 0.9em; text-transform: uppercase; }
+        .music-btn { background: none; border: none; font-size: 1.4em; cursor: pointer; transition: 0.3s; padding: 0; margin: 0; }
+        .music-btn:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px #ccff00); }
     </style>
 </head>
 <body>
+
+    <!-- 🎵 Background Music Audio Element & Widget -->
+    <audio id="bg-music" loop>
+        <source src="bg-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="music-widget">
+        <span>🎵 Music:</span>
+        <button class="music-btn" id="play-pause-btn" onclick="toggleMusic()" title="Play/Pause">🔇</button>
+    </div>
 
     <!-- Effect Layer Container -->
     <div id="effect-container" class="effect-layer"></div>
@@ -392,6 +414,19 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
+        // 🎵 Music Player & Mute/Unmute Control Logic 🎵
+        function toggleMusic() {
+            const music = document.getElementById('bg-music');
+            const btn = document.getElementById('play-pause-btn');
+            if (music.paused) {
+                music.play();
+                btn.innerText = '🔊'; // සින්දුව ප්ලේ වන විට ස්පීකර් අයිකන් එක පෙන්වයි
+            } else {
+                music.pause();
+                btn.innerText = '🔇'; // මියුට් කළ විට මියුට් අයිකන් එක පෙන්වයි
+            }
+        }
+
         // 🔴 Folder Toggle Logic 🔴
         function toggleFolder(folderId) {
             const folderContent = document.getElementById(folderId);
