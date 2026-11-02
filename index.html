@@ -96,6 +96,18 @@
             box-shadow: 0 0 10px var(--theme-glow);
         }
 
+        /* 🔴 Special YouTube Live Tab Style (7th Tab) 🔴 */
+        .tab-btn.live-tab {
+            background-color: #ff0000 !important;
+            color: #000000 !important;
+            border: 2px solid #ff4d4d !important;
+            font-weight: bold;
+        }
+        .tab-btn.live-tab:hover {
+            background-color: #cc0000 !important;
+            color: #ffffff !important;
+        }
+
         /* Sections Design */
         .container {
             max-width: 1100px;
@@ -107,6 +119,43 @@
         .section-content { display: none; animation: fadeIn 0.4s ease-in-out; }
         .section-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 🔴 LIVE NOTIFICATION BANNER 🔴 */
+        .live-notification-banner {
+            background: linear-gradient(90deg, #ff0000, #b30000);
+            color: #000000;
+            font-weight: bold;
+            text-align: center;
+            padding: 12px;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+            position: relative;
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            animation: pulseBanner 1.5s infinite;
+        }
+        @keyframes pulseBanner {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; box-shadow: 0 0 25px rgba(255, 0, 0, 1); }
+            100% { opacity: 0.9; }
+        }
+        .live-notification-banner a {
+            background: #000000;
+            color: #ff3333;
+            padding: 5px 12px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: 0.3s;
+        }
+        .live-notification-banner a:hover {
+            background: #ffffff;
+            color: #000000;
+        }
 
         /* Team Cards & Tables */
         .team-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 40px; margin-top: 20px; }
@@ -257,9 +306,25 @@
             background-color: #25D366;
             color: #000000;
         }
+
+        /* Mobile clean view for Live stream page */
+        @media screen and (max-width: 768px) {
+            body.viewing-live .effect-controls,
+            body.viewing-live .music-widget,
+            body.viewing-live .theme-switcher,
+            body.viewing-live header {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- 🔴 LIVE NOTIFICATION BANNER 🔴 -->
+    <div id="live-notification" class="live-notification-banner" style="display:none;">
+        <span>🔴 EXECUTORS JR IS LIVE NOW... Watch Our Tournament Live ❤️</span>
+        <a href="https://www.youtube.com/@exjrtour" target="_blank" onclick="openLiveView()">Watch Live</a>
+    </div>
 
     <!-- 🎨 Theme Switcher Widget -->
     <div class="theme-switcher">
@@ -308,6 +373,8 @@
             <button class="tab-btn" onclick="openTab('schedule')">Match Schedule</button>
             <button class="tab-btn" onclick="openTab('results')">Match Results</button>
             <button class="tab-btn" onclick="openTab('rules')">Join & Rules</button>
+            <!-- 🔴 7th Tab: Watch Our Tournaments Live 🔴 -->
+            <button class="tab-btn live-tab" onclick="openLiveView()">🔴 Watch Our Tournaments Live</button>
         </div>
     </header>
 
@@ -509,6 +576,20 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
+        // 🔴 Simulate Live Detection & Notification Trigger 
+        const isChannelLive = true; 
+
+        window.onload = function() {
+            if(isChannelLive) {
+                document.getElementById('live-notification').style.display = 'flex';
+            }
+        };
+
+        function openLiveView() {
+            document.body.classList.add('viewing-live');
+            window.open('https://www.youtube.com/@exjrtour', '_blank');
+        }
+
         // 🎨 Theme Switcher Logic 🎨
         function setTheme(themeName) {
             document.body.className = ''; 
@@ -631,7 +712,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 document.getElementById('war-body').innerHTML = '<tr><td colspan="2" style="color: #ff3333;">කරුණාකර අලුත් Sheet එකේ CSV Link එක කෝඩ් එකට ඇතුලත් කරන්න.</td></tr>';
             });
 
-        // MANUAL EFFECT LOGIC (Increased Concentration/Density)
+        // MANUAL EFFECT LOGIC
         function setEffect(type) {
             const container = document.getElementById('effect-container');
             container.innerHTML = ''; 
@@ -641,7 +722,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 container.classList.add('sunshine');
             } else if (type === 'rain' || type === 'storm') {
                 if (type === 'storm') container.classList.add('stormy');
-                for (let i = 0; i < 70; i++) { // Increased drop count
+                for (let i = 0; i < 70; i++) {
                     let drop = document.createElement('div');
                     drop.className = 'raindrop';
                     drop.style.left = Math.random() * 100 + 'vw';
@@ -650,7 +731,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
                     container.appendChild(drop);
                 }
             } else if (type === 'snow') {
-                for (let i = 0; i < 50; i++) { // Increased particle count
+                for (let i = 0; i < 50; i++) {
                     let particle = document.createElement('div');
                     particle.className = 'seasonal-particle';
                     particle.innerText = '❄️';
@@ -660,7 +741,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
                     container.appendChild(particle);
                 }
             } else if (type === 'flower') {
-                for (let i = 0; i < 40; i++) { // Increased flower count
+                for (let i = 0; i < 40; i++) {
                     let particle = document.createElement('div');
                     particle.className = 'seasonal-particle';
                     particle.innerText = '🌸';
