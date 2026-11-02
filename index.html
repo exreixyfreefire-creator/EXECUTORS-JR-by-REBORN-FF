@@ -120,43 +120,6 @@
         .section-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 🔴 LIVE NOTIFICATION BANNER 🔴 */
-        .live-notification-banner {
-            background: linear-gradient(90deg, #ff0000, #b30000);
-            color: #000000;
-            font-weight: bold;
-            text-align: center;
-            padding: 12px;
-            font-size: 1.1em;
-            text-transform: uppercase;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
-            position: relative;
-            z-index: 2000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            animation: pulseBanner 1.5s infinite;
-        }
-        @keyframes pulseBanner {
-            0% { opacity: 0.9; }
-            50% { opacity: 1; box-shadow: 0 0 25px rgba(255, 0, 0, 1); }
-            100% { opacity: 0.9; }
-        }
-        .live-notification-banner a {
-            background: #000000;
-            color: #ff3333;
-            padding: 5px 12px;
-            border-radius: 15px;
-            text-decoration: none;
-            font-size: 0.9em;
-            transition: 0.3s;
-        }
-        .live-notification-banner a:hover {
-            background: #ffffff;
-            color: #000000;
-        }
-
         /* Team Cards & Tables */
         .team-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 40px; margin-top: 20px; }
         .team-card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; width: 160px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.5); transition: 0.3s; cursor: pointer; }
@@ -306,25 +269,9 @@
             background-color: #25D366;
             color: #000000;
         }
-
-        /* Mobile clean view for Live stream page */
-        @media screen and (max-width: 768px) {
-            body.viewing-live .effect-controls,
-            body.viewing-live .music-widget,
-            body.viewing-live .theme-switcher,
-            body.viewing-live header {
-                display: none !important;
-            }
-        }
     </style>
 </head>
 <body>
-
-    <!-- 🔴 LIVE NOTIFICATION BANNER 🔴 -->
-    <div id="live-notification" class="live-notification-banner" style="display:none;">
-        <span>🔴 EXECUTORS JR IS LIVE NOW... Watch Our Tournament Live ❤️</span>
-        <a href="https://www.youtube.com/@exjrtour" target="_blank" onclick="openLiveView()">Watch Live</a>
-    </div>
 
     <!-- 🎨 Theme Switcher Widget -->
     <div class="theme-switcher">
@@ -374,7 +321,7 @@
             <button class="tab-btn" onclick="openTab('results')">Match Results</button>
             <button class="tab-btn" onclick="openTab('rules')">Join & Rules</button>
             <!-- 🔴 7th Tab: Watch Our Tournaments Live 🔴 -->
-            <button class="tab-btn live-tab" onclick="openLiveView()">🔴 Watch Our Tournaments Live</button>
+            <button class="tab-btn live-tab" onclick="openTab('live')">🔴 Watch Our Tournaments Live</button>
         </div>
     </header>
 
@@ -553,6 +500,25 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 </a>
             </div>
         </div>
+
+        <!-- 🔴 7. YOUTUBE LIVE EMBED SECTION (Opens Inside Website) 🔴 -->
+        <div id="live" class="section-content">
+            <h2><span class="neon-text">|</span> Watch Our Tournaments Live</h2>
+            <div class="custom-box" style="text-align: center;">
+                <h3>🔴 EXECUTORS JR LIVE STREAM</h3>
+                <p>අපේ ලයිව් මැච් එක මෙතනින් නරඹන්න!</p>
+                
+                <!-- YouTube Live Embed Player -->
+                <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; margin-top: 15px; border-radius: 8px; overflow: hidden; border: 2px solid var(--theme-color);">
+                    <iframe src="https://www.youtube.com/embed/live_stream?channel=UC2hBb5UrK6gAO1i3B" 
+                            title="YouTube Live Player" 
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Popup Modal -->
@@ -576,20 +542,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
-        // 🔴 Simulate Live Detection & Notification Trigger 
-        const isChannelLive = true; 
-
-        window.onload = function() {
-            if(isChannelLive) {
-                document.getElementById('live-notification').style.display = 'flex';
-            }
-        };
-
-        function openLiveView() {
-            document.body.classList.add('viewing-live');
-            window.open('https://www.youtube.com/@exjrtour', '_blank');
-        }
-
         // 🎨 Theme Switcher Logic 🎨
         function setTheme(themeName) {
             document.body.className = ''; 
