@@ -186,21 +186,61 @@
             border-radius: 8px;
             margin-bottom: 10px;
             border: 1px solid #222;
-            cursor: pointer;
             transition: 0.3s;
         }
         .package-item:hover {
             border-color: var(--theme-color);
-            transform: translateY(-2px);
         }
         .package-item.selected {
             background: rgba(204, 255, 0, 0.15);
             border-color: var(--theme-color);
         }
-        .pkg-name { font-weight: bold; font-size: 1.1em; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .pkg-name { 
+            font-weight: bold; 
+            font-size: 1.1em; 
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            cursor: pointer;
+            flex-grow: 1;
+        }
+        .pkg-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
         .pkg-price { color: #00ff00; font-weight: bold; font-size: 1.1em; }
+        
+        /* Minus / Back button inside package item */
+        .pkg-minus-btn {
+            background: #ff3333;
+            color: #fff;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .pkg-minus-btn:hover { background: #ff0000; transform: scale(1.1); }
+        .package-item.selected .pkg-minus-btn { display: flex; }
+        .pkg-count {
+            color: var(--theme-color);
+            font-weight: bold;
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: none;
+        }
+        .package-item.selected .pkg-count { display: inline-block; }
 
-        /* Compact Floating Cart Button (Effect Button style) */
+        /* Compact Floating Cart Button (Effect button style, visible only on Topup tab) */
         .cart-widget {
             display: none;
             position: fixed;
@@ -216,7 +256,7 @@
             cursor: pointer;
             transition: 0.3s;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         .cart-widget:hover {
             transform: scale(1.05);
@@ -742,87 +782,159 @@ If you are passionate about gaming and eager to become a part of our growing leg
                     <!-- Diamond Packs -->
                     <div class="topup-section-box">
                         <h3>💎 Diamond Packs</h3>
-                        <div class="package-item" onclick="togglePackage(this, '25 Diamonds', 90)">
-                            <span class="pkg-name">💎 25 Diamonds</span>
-                            <span class="pkg-price">LKR 90</span>
+                        <div class="package-item" data-name="25 Diamonds" data-price="90">
+                            <span class="pkg-name" onclick="addPackage('25 Diamonds', 90)">💎 25 Diamonds</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('25 Diamonds', 90)">-</button>
+                                <span class="pkg-price" onclick="addPackage('25 Diamonds', 90)">LKR 90</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, '100 Diamonds', 330)">
-                            <span class="pkg-name">💎 100 Diamonds</span>
-                            <span class="pkg-price">LKR 330</span>
+                        <div class="package-item" data-name="100 Diamonds" data-price="330">
+                            <span class="pkg-name" onclick="addPackage('100 Diamonds', 330)">💎 100 Diamonds</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('100 Diamonds', 330)">-</button>
+                                <span class="pkg-price" onclick="addPackage('100 Diamonds', 330)">LKR 330</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, '310 Diamonds', 980)">
-                            <span class="pkg-name">💎 310 Diamonds</span>
-                            <span class="pkg-price">LKR 980</span>
+                        <div class="package-item" data-name="310 Diamonds" data-price="980">
+                            <span class="pkg-name" onclick="addPackage('310 Diamonds', 980)">💎 310 Diamonds</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('310 Diamonds', 980)">-</button>
+                                <span class="pkg-price" onclick="addPackage('310 Diamonds', 980)">LKR 980</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, '520 Diamonds', 1670)">
-                            <span class="pkg-name">💎 520 Diamonds</span>
-                            <span class="pkg-price">LKR 1670</span>
+                        <div class="package-item" data-name="520 Diamonds" data-price="1670">
+                            <span class="pkg-name" onclick="addPackage('520 Diamonds', 1670)">💎 520 Diamonds</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('520 Diamonds', 1670)">-</button>
+                                <span class="pkg-price" onclick="addPackage('520 Diamonds', 1670)">LKR 1670</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, '1060 Diamonds', 3120)">
-                            <span class="pkg-name">💎 1060 Diamonds</span>
-                            <span class="pkg-price">LKR 3120</span>
+                        <div class="package-item" data-name="1060 Diamonds" data-price="3120">
+                            <span class="pkg-name" onclick="addPackage('1060 Diamonds', 3120)">💎 1060 Diamonds</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('1060 Diamonds', 3120)">-</button>
+                                <span class="pkg-price" onclick="addPackage('1060 Diamonds', 3120)">LKR 3120</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, '2180 Diamonds', 6220)">
-                            <span class="pkg-name">💎 2180 Diamonds</span>
-                            <span class="pkg-price">LKR 6220</span>
+                        <div class="package-item" data-name="2180 Diamonds" data-price="6220">
+                            <span class="pkg-name" onclick="addPackage('2180 Diamonds', 6220)">💎 2180 Diamonds</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('2180 Diamonds', 6220)">-</button>
+                                <span class="pkg-price" onclick="addPackage('2180 Diamonds', 6220)">LKR 6220</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, '5600 Diamonds', 15720)">
-                            <span class="pkg-name">💎 5600 Diamonds</span>
-                            <span class="pkg-price">LKR 15720</span>
+                        <div class="package-item" data-name="5600 Diamonds" data-price="15720">
+                            <span class="pkg-name" onclick="addPackage('5600 Diamonds', 15720)">💎 5600 Diamonds</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('5600 Diamonds', 15720)">-</button>
+                                <span class="pkg-price" onclick="addPackage('5600 Diamonds', 15720)">LKR 15720</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Membership Packs -->
                     <div class="topup-section-box">
                         <h3>👑 Membership Packs</h3>
-                        <div class="package-item" onclick="togglePackage(this, 'Weekly Lite', 130)">
-                            <span class="pkg-name">👑 Weekly Lite</span>
-                            <span class="pkg-price">LKR 130</span>
+                        <div class="package-item" data-name="Weekly Lite" data-price="130">
+                            <span class="pkg-name" onclick="addPackage('Weekly Lite', 130)">👑 Weekly Lite</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('Weekly Lite', 130)">-</button>
+                                <span class="pkg-price" onclick="addPackage('Weekly Lite', 130)">LKR 130</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, 'Weekly', 550)">
-                            <span class="pkg-name">👑 Weekly</span>
-                            <span class="pkg-price">LKR 550</span>
+                        <div class="package-item" data-name="Weekly" data-price="550">
+                            <span class="pkg-name" onclick="addPackage('Weekly', 550)">👑 Weekly</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('Weekly', 550)">-</button>
+                                <span class="pkg-price" onclick="addPackage('Weekly', 550)">LKR 550</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, 'Weekly Max', 670)">
-                            <span class="pkg-name">👑 Weekly Max</span>
-                            <span class="pkg-price">LKR 670</span>
+                        <div class="package-item" data-name="Weekly Max" data-price="670">
+                            <span class="pkg-name" onclick="addPackage('Weekly Max', 670)">👑 Weekly Max</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('Weekly Max', 670)">-</button>
+                                <span class="pkg-price" onclick="addPackage('Weekly Max', 670)">LKR 670</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, 'Monthly', 2680)">
-                            <span class="pkg-name">👑 Monthly</span>
-                            <span class="pkg-price">LKR 2680</span>
+                        <div class="package-item" data-name="Monthly" data-price="2680">
+                            <span class="pkg-name" onclick="addPackage('Monthly', 2680)">👑 Monthly</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('Monthly', 2680)">-</button>
+                                <span class="pkg-price" onclick="addPackage('Monthly', 2680)">LKR 2680</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, 'VIP Max', 3320)">
-                            <span class="pkg-name">👑 VIP Max</span>
-                            <span class="pkg-price">LKR 3320</span>
+                        <div class="package-item" data-name="VIP Max" data-price="3320">
+                            <span class="pkg-name" onclick="addPackage('VIP Max', 3320)">👑 VIP Max</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('VIP Max', 3320)">-</button>
+                                <span class="pkg-price" onclick="addPackage('VIP Max', 3320)">LKR 3320</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Level Up Pass Packs -->
                     <div class="topup-section-box">
                         <h3>⚡ Level Up Pass Packs</h3>
-                        <div class="package-item" onclick="togglePackage(this, 'Level Up Pass - L6', 120)">
-                            <span class="pkg-name">⚡ Level Up L6</span>
-                            <span class="pkg-price">LKR 120</span>
+                        <div class="package-item" data-name="Level Up Pass - L6" data-price="120">
+                            <span class="pkg-name" onclick="addPackage('Level Up Pass - L6', 120)">⚡ Level Up L6</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('Level Up Pass - L6', 120)">-</button>
+                                <span class="pkg-price" onclick="addPackage('Level Up Pass - L6', 120)">LKR 120</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, 'Level Up Pass - L10', 220)">
-                            <span class="pkg-name">⚡ Level Up L10</span>
-                            <span class="pkg-price">LKR 220</span>
+                        <div class="package-item" data-name="Level Up Pass - L10" data-price="220">
+                            <span class="pkg-name" onclick="addPackage('Level Up Pass - L10', 220)">⚡ Level Up L10</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('Level Up Pass - L10', 220)">-</button>
+                                <span class="pkg-price" onclick="addPackage('Level Up Pass - L10', 220)">LKR 220</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, 'Level Up Pass - L15', 220)">
-                            <span class="pkg-name">⚡ Level Up L15</span>
-                            <span class="pkg-price">LKR 220</span>
+                        <div class="package-item" data-name="Level Up Pass - L15" data-price="220">
+                            <span class="pkg-name" onclick="addPackage('Level Up Pass - L15', 220)">⚡ Level Up L15</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('Level Up Pass - L15', 220)">-</button>
+                                <span class="pkg-price" onclick="addPackage('Level Up Pass - L15', 220)">LKR 220</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, 'Level Up Pass - L20', 220)">
-                            <span class="pkg-name">⚡ Level Up L20</span>
-                            <span class="pkg-price">LKR 220</span>
+                        <div class="package-item" data-name="Level Up Pass - L20" data-price="220">
+                            <span class="pkg-name" onclick="addPackage('Level Up Pass - L20', 220)">⚡ Level Up L20</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('Level Up Pass - L20', 220)">-</button>
+                                <span class="pkg-price" onclick="addPackage('Level Up Pass - L20', 220)">LKR 220</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, 'Level Up Pass - L25', 220)">
-                            <span class="pkg-name">⚡ Level Up L25</span>
-                            <span class="pkg-price">LKR 220</span>
+                        <div class="package-item" data-name="Level Up Pass - L25" data-price="220">
+                            <span class="pkg-name" onclick="addPackage('Level Up Pass - L25', 220)">⚡ Level Up L25</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('Level Up Pass - L25', 220)">-</button>
+                                <span class="pkg-price" onclick="addPackage('Level Up Pass - L25', 220)">LKR 220</span>
+                            </div>
                         </div>
-                        <div class="package-item" onclick="togglePackage(this, 'Level Up Pass - L30', 320)">
-                            <span class="pkg-name">⚡ Level Up L30</span>
-                            <span class="pkg-price">LKR 320</span>
+                        <div class="package-item" data-name="Level Up Pass - L30" data-price="320">
+                            <span class="pkg-name" onclick="addPackage('Level Up Pass - L30', 320)">⚡ Level Up L30</span>
+                            <div class="pkg-right">
+                                <span class="pkg-count">x0</span>
+                                <button class="pkg-minus-btn" onclick="removePackage('Level Up Pass - L30', 320)">-</button>
+                                <span class="pkg-price" onclick="addPackage('Level Up Pass - L30', 320)">LKR 320</span>
+                            </div>
                         </div>
                     </div>
 
@@ -831,9 +943,9 @@ If you are passionate about gaming and eager to become a part of our growing leg
         </div>
     </div>
 
-    <!-- 🛒 Compact Floating Cart Button (Like Effect Button, visible only on Topup tab) -->
+    <!-- 🛒 Compact Floating Cart Button (Effect button style, visible only on Topup tab) -->
     <div id="cartWidget" class="cart-widget" onclick="sendToWhatsapp()">
-        <span>🛒 Cart: <span id="cartTotalPrice" style="color: #00ff00;">LKR 0</span> 💬</span>
+        <span>🛒 <span id="cartTotalPrice" style="color: #00ff00;">LKR 0</span> 💬</span>
     </div>
 
     <!-- Popup Modal -->
@@ -857,22 +969,64 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
-        // 🛒 Topup Store Cart Logic 🛒
+        // 🛒 Topup Store Cart Logic with Quantity & Minus Support 🛒
         let selectedPackages = [];
 
-        function togglePackage(element, name, price) {
-            element.classList.toggle('selected');
-            const index = selectedPackages.findIndex(p => p.name === name);
-            if (index > -1) {
-                selectedPackages.splice(index, 1);
+        function addPackage(name, price) {
+            const existing = selectedPackages.find(p => p.name === name);
+            if (existing) {
+                existing.qty += 1;
             } else {
-                selectedPackages.push({ name, price });
+                selectedPackages.push({ name, price, qty: 1 });
             }
+            updatePackageUI();
             updateCartTotal();
         }
 
+        function removePackage(name, price) {
+            event.stopPropagation(); // Prevent triggering addPackage on parent click
+            const existing = selectedPackages.find(p => p.name === name);
+            if (existing) {
+                existing.qty -= 1;
+                if (existing.qty <= 0) {
+                    selectedPackages = selectedPackages.filter(p => p.name !== name);
+                }
+            }
+            updatePackageUI();
+            updateCartTotal();
+        }
+
+        function updatePackageUI() {
+            // Reset all items visual state
+            document.querySelectorAll('.package-item').forEach(item => {
+                item.classList.remove('selected');
+                item.querySelector('.pkg-count').innerText = 'x0';
+            });
+
+            // Apply state based on selectedPackages array
+            selectedPackages.forEach(p => {
+                const items = document.querySelectorAll('.package-item');
+                items.forEach(item => {
+                    if(item.getAttribute('data-name') === p.name) {
+                        item.classList.add('selected');
+                        item.querySelector('.pkg-count').innerText = 'x' + p.qty;
+                    }
+                });
+            });
+        }
+
+        // Make package items clickable anywhere on the row except minus button
+        document.querySelectorAll('.package-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if(e.target.classList.contains('pkg-minus-btn')) return;
+                const name = this.getAttribute('data-name');
+                const price = parseInt(this.getAttribute('data-price'));
+                addPackage(name, price);
+            });
+        });
+
         function updateCartTotal() {
-            let total = selectedPackages.reduce((sum, p) => sum + p.price, 0);
+            let total = selectedPackages.reduce((sum, p) => sum + (p.price * p.qty), 0);
             document.getElementById('cartTotalPrice').innerText = 'LKR ' + total;
         }
 
@@ -888,12 +1042,12 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 return;
             }
 
-            let total = selectedPackages.reduce((sum, p) => sum + p.price, 0);
+            let total = selectedPackages.reduce((sum, p) => sum + (p.price * p.qty), 0);
             let message = `*🔥 BENA x CHALA TOPUP ORDER 🔥*\n\n`;
             message += `🎮 *Game ID / UID:* ${gameId}\n\n`;
             message += `📦 *Selected Packages:*\n`;
             selectedPackages.forEach(p => {
-                message += `- ${p.name} (LKR ${p.price})\n`;
+                message += `- ${p.name} x${p.qty} (LKR ${p.price * p.qty})\n`;
             });
             message += `\n💰 *Total Amount:* LKR ${total}\n\n`;
             message += `✨ මම මේ ටොපප් එක කරගන්න කැමතියි. හරියටම ටොපප් කරලා දෙන්න!`;
