@@ -120,7 +120,7 @@
             box-shadow: 0 0 10px var(--theme-glow);
         }
 
-        /* 🔴 Special YouTube Live Tab Style (7th Tab) 🔴 */
+        /* 🔴 Special YouTube Live Tab Style 🔴 */
         .tab-btn.live-tab {
             background-color: #ff0000 !important;
             color: #000000 !important;
@@ -276,26 +276,26 @@
         .music-btn { background: none; border: none; font-size: 1.4em; cursor: pointer; transition: 0.3s; padding: 0; margin: 0; }
         .music-btn:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px var(--theme-color)); }
 
-        /* 🎨 THEME SWITCHER WIDGET (Fixed Position Top-Left) 🎨 */
+        /* 🎨 THEME SWITCHER WIDGET (Fixed Position Top-Left, Vertical Style) 🎨 */
         .theme-switcher {
             position: fixed; top: 20px; left: 20px; background: rgba(0, 0, 0, 0.85);
-            border: 2px solid var(--theme-color); border-radius: 20px; padding: 6px 12px;
-            display: flex; align-items: center; gap: 8px; z-index: 1000;
+            border: 2px solid var(--theme-color); border-radius: 20px; padding: 12px 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 1000;
             box-shadow: 0 0 10px var(--theme-glow);
         }
-        .theme-switcher span { color: var(--theme-color); font-size: 0.8em; font-family: 'Oswald', sans-serif; }
+        .theme-switcher span { color: var(--theme-color); font-size: 0.75em; font-family: 'Oswald', sans-serif; writing-mode: vertical-rl; text-orientation: mixed; }
         .theme-dot {
             width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid #fff;
             transition: 0.3s;
         }
         .theme-dot:hover { transform: scale(1.2); }
 
-        /* 📱 FULL-WIDTH SOCIAL BARS (Inside Join & Rules) 📱 */
+        /* 📱 FULL-WIDTH SOCIAL BARS (Inside Join With Us) 📱 */
         .social-bar-container {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-top: 25px;
+            margin-top: 15px;
         }
         .social-bar {
             display: flex;
@@ -329,13 +329,18 @@
             background-color: #25D366;
             color: #000000;
         }
+        .whatsapp-channel-bar {
+            background-color: #128C7E;
+            color: #ffffff;
+            border: 2px solid #25D366;
+        }
     </style>
 </head>
 <body>
 
-    <!-- 🎨 Theme Switcher Widget -->
+    <!-- 🎨 Theme Switcher Widget (Fixed Vertical Top-Left) -->
     <div class="theme-switcher">
-        <span>Theme:</span>
+        <span>Theme</span>
         <div class="theme-dot" style="background-color: #ccff00;" onclick="setTheme('lime')" title="Lime Green"></div>
         <div class="theme-dot" style="background-color: #ff3333;" onclick="setTheme('red')" title="Fiery Red"></div>
         <div class="theme-dot" style="background-color: #00ffff;" onclick="setTheme('blue')" title="Cyber Blue"></div>
@@ -380,12 +385,13 @@
 
         <div class="tab-container">
             <button class="tab-btn active" onclick="openTab('about')">About Guild</button>
+            <button class="tab-btn" onclick="openTab('join')">Join With Us</button>
             <button class="tab-btn" onclick="openTab('players')">Player Details</button>
             <button class="tab-btn" onclick="openTab('wars')">Guild Wars Heroes</button>
             <button class="tab-btn" onclick="openTab('schedule')">Match Schedule</button>
             <button class="tab-btn" onclick="openTab('results')">Match Results</button>
             <button class="tab-btn" onclick="openTab('rules')">Join & Rules</button>
-            <!-- 🔴 7th Tab: Watch Our Tournaments Live 🔴 -->
+            <!-- 🔴 8th Tab: Watch Our Tournaments Live 🔴 -->
             <button class="tab-btn live-tab" onclick="openTab('live')">🔴 Watch Our Tournaments Live</button>
         </div>
     </header>
@@ -412,7 +418,29 @@ If you are passionate about gaming and eager to become a part of our growing leg
             </div>
         </div>
 
-        <!-- 2. PLAYER DETAILS SECTION -->
+        <!-- 🤝 2. JOIN WITH US SECTION (NEW TAB) 🤝 -->
+        <div id="join" class="section-content">
+            <h2><span class="neon-text">|</span> Connect With Us</h2>
+            <div class="custom-box">
+                <p>අපගේ නිල සමාජ ජාලා සහ නායකයන් සමඟ සම්බන්ධ වීමට පහත ලින්ක් භාවිතා කරන්න:</p>
+                <div class="social-bar-container">
+                    <a href="https://whatsapp.com/channel/YOUR_WHATSAPP_CHANNEL" target="_blank" class="social-bar whatsapp-channel-bar">
+                        📢 Join Our WhatsApp Channel
+                    </a>
+                    <a href="https://www.tiktok.com/@exjrofficial?_r=1&_t=ZS-9B4kylkEwq2" target="_blank" class="social-bar tiktok-bar">
+                        🎵 Visit Our TikTok Page
+                    </a>
+                    <a href="https://wa.me/+94701883223" target="_blank" class="social-bar whatsapp-bar-1">
+                        💬 Contact Leader Via Whatsapp
+                    </a>
+                    <a href="https://wa.me/+94756260806" target="_blank" class="social-bar whatsapp-bar-2">
+                        💬 Contact Acting Leader Via Whatsapp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. PLAYER DETAILS SECTION -->
         <div id="players" class="section-content">
             <h2><span class="neon-text">|</span> Guild Management</h2>
             <div class="team-grid">
@@ -475,7 +503,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             </table>
         </div>
 
-        <!-- 3. GUILD WARS LEADERS SECTION -->
+        <!-- 4. GUILD WARS LEADERS SECTION -->
         <div id="wars" class="section-content">
             <h2><span class="neon-text">|</span> Guild Wars Top Scorers</h2>
             <p>මෙම ලකුණු සටහන අලුත් Google Sheet එක මගින් Auto Update වේ.</p>
@@ -498,7 +526,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             </table>
         </div>
 
-        <!-- 4. MATCH SCHEDULE SECTION -->
+        <!-- 5. MATCH SCHEDULE SECTION -->
         <div id="schedule" class="section-content">
             <h2><span class="neon-text">|</span> Upcoming Esports Matches</h2>
             <div class="custom-box">
@@ -510,7 +538,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             </div>
         </div>
 
-        <!-- 🔴 5. MATCH RESULTS SECTION (NEW FOLDERS) 🔴 -->
+        <!-- 🔴 6. MATCH RESULTS SECTION 🔴 -->
         <div id="results" class="section-content">
             <h2><span class="neon-text">|</span> Tournament Match Results</h2>
             
@@ -525,7 +553,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <p><strong>DATE:</strong> AUGUST 25 2026</p>
                 
                 <div class="match-photos">
-                    <!-- මෙතනට ඔයාගේ කලින් තිබුණු ෆොටෝ එක දැම්මා -->
                     <img src="aug25booyah.jpg" alt="Match Photo 1">
                 </div>
             </div>
@@ -541,7 +568,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <p><strong>DATE:</strong> Unconfirmed</p>
                 
                 <div class="match-photos">
-                    <!-- මෙතනට ඔයාගේ කලින් තිබුණු ෆොටෝ එක දැම්මා -->
                     <img src="slssdefeat.jpg" alt="Match Photo 1">
                 </div>
             </div>
@@ -558,14 +584,13 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <p><strong>No OF Matches:</strong> 3 Matches</p>
                 <p><strong>No OF Wins:</strong> 2 Matches</p>
                 <div class="match-photos">
-                    <!-- මෙතනට ඔයාගේ කලින් තිබුණු ෆොටෝ එක දැම්මා -->
                     <img src="exgl1.jpg" alt="Match Photo 1">
                     <img src="exgl2.jpg" alt="Match Photo 2">
                 </div>
             </div>
         </div>
 
-        <!-- 6. JOIN & RULES SECTION -->
+        <!-- 7. JOIN & RULES SECTION -->
          <div id="rules" class="section-content">
             <h2><span class="neon-text">|</span> Requirements To Join</h2>
             <ul class="rules-list">
@@ -581,22 +606,9 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <li>Never mess with other guild's members</li>
                 <li>Respect Guildmates & All other players.</li>
             </ul>
-
-            <!-- 📱 Social Full-Width Bars inside Join & Rules 📱 -->
-            <div class="social-bar-container">
-                <a href="https://www.tiktok.com/@exjrofficial?_r=1&_t=ZS-9B4kylkEwq2" target="_blank" class="social-bar tiktok-bar">
-                    🎵 Visit Our TikTok Page
-                </a>
-                <a href="https://wa.me/+94701883223" target="_blank" class="social-bar whatsapp-bar-1">
-                    💬 Contact Leader Via Whatsapp
-                </a>
-                <a href="https://wa.me/+94756260806" target="_blank" class="social-bar whatsapp-bar-2">
-                    💬 Contact Acting Leader Via Whatsapp
-                </a>
-            </div>
         </div>
 
-        <!-- 🔴 7. YOUTUBE LIVE EMBED SECTION (Opens Inside Website) 🔴 -->
+        <!-- 🔴 8. YOUTUBE LIVE EMBED SECTION 🔴 -->
         <div id="live" class="section-content">
             <h2><span class="neon-text">|</span> Watch Our Tournaments Live</h2>
             <div class="custom-box" style="text-align: center;">
