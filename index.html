@@ -200,40 +200,34 @@
         .pkg-name { font-weight: bold; font-size: 1.1em; color: #fff; display: flex; align-items: center; gap: 8px; }
         .pkg-price { color: #00ff00; font-weight: bold; font-size: 1.1em; }
 
-        /* Floating Cart Widget (Initially Hidden, shown only on Topup tab) */
+        /* Compact Floating Cart Button (Effect Button style) */
         .cart-widget {
             display: none;
             position: fixed;
-            bottom: 80px;
-            right: 20px;
+            bottom: 20px;
+            right: 90px;
             background: rgba(0, 0, 0, 0.9);
             border: 2px solid var(--theme-color);
-            border-radius: 15px;
-            padding: 15px 20px;
+            border-radius: 30px;
+            padding: 10px 18px;
             z-index: 1000;
-            box-shadow: 0 0 20px var(--theme-glow);
-            max-width: 320px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .cart-widget h4 { margin: 0 0 8px 0; color: var(--theme-color); text-transform: uppercase; font-size: 1em; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .cart-total { font-size: 1.2em; font-weight: bold; color: #00ff00; margin-bottom: 10px; display: flex; justify-content: space-between; }
-        .whatsapp-buy-btn {
-            background-color: #25D366;
-            color: #000;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
+            box-shadow: 0 0 15px var(--theme-glow);
             font-family: 'Oswald', sans-serif;
-            font-size: 1.1em;
-            font-weight: bold;
-            text-transform: uppercase;
             cursor: pointer;
             transition: 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            align-items: center;
+            gap: 10px;
         }
-        .whatsapp-buy-btn:hover { background-color: #20ba5a; transform: translateY(-2px); }
+        .cart-widget:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--theme-color);
+        }
+        .cart-widget span {
+            color: var(--theme-color);
+            font-size: 1em;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
 
         /* ✨ LIQUID GLASS SCROLL-IN SEARCH BAR ✨ */
         .liquid-search-box {
@@ -837,14 +831,9 @@ If you are passionate about gaming and eager to become a part of our growing leg
         </div>
     </div>
 
-    <!-- 🛒 Floating Cart Widget (Only visible on Topup tab) -->
-    <div id="cartWidget" class="cart-widget">
-        <h4>🛒 Your Cart</h4>
-        <div class="cart-total">
-            <span>Total:</span>
-            <span id="cartTotalPrice">LKR 0</span>
-        </div>
-        <button class="whatsapp-buy-btn" onclick="sendToWhatsapp()">Buy Via Whatsapp 💬</button>
+    <!-- 🛒 Compact Floating Cart Button (Like Effect Button, visible only on Topup tab) -->
+    <div id="cartWidget" class="cart-widget" onclick="sendToWhatsapp()">
+        <span>🛒 Cart: <span id="cartTotalPrice" style="color: #00ff00;">LKR 0</span> 💬</span>
     </div>
 
     <!-- Popup Modal -->
@@ -1029,7 +1018,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             // Show Cart Widget ONLY on Topup Tab
             const cartWidget = document.getElementById('cartWidget');
             if (tabName === 'topup') {
-                cartWidget.style.display = 'block';
+                cartWidget.style.display = 'flex';
             } else {
                 cartWidget.style.display = 'none';
             }
