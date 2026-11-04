@@ -1051,7 +1051,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
             const todayStr = new Date().toDateString();
             const lastLoginDate = localStorage.getItem('exjr_login_date');
             
-            // Auto logout if day has changed
             if (lastLoginDate !== todayStr) {
                 localStorage.removeItem('exjr_is_admin');
                 localStorage.removeItem('exjr_login_date');
@@ -1071,14 +1070,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
                     }
                 }).catch(err => console.log(err));
 
-            // Fetch Results and Schedules from Google Sheet
             loadDataFromCloud();
-
-            // Check Admin Login State
-            if(localStorage.getItem('exjr_is_admin') === 'true') {
-                const adminBtn = document.getElementById('adminTabBtn');
-                if(adminBtn) adminBtn.style.display = 'inline-block';
-            }
         });
 
         function loadDataFromCloud() {
@@ -1167,8 +1159,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
             if(u === 'exjrbyrebornff' && p === '19742@Januzz1#') {
                 localStorage.setItem('exjr_is_admin', 'true');
                 localStorage.setItem('exjr_login_date', new Date().toDateString());
-                const adminBtn = document.getElementById('adminTabBtn');
-                if(adminBtn) adminBtn.style.display = 'inline-block';
                 closeAdminModal();
                 openTab('adminpanel');
                 alert('Admin Login Successful! 🎉');
@@ -1179,8 +1169,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
         function adminLogout() {
             localStorage.removeItem('exjr_is_admin');
             localStorage.removeItem('exjr_login_date');
-            const adminBtn = document.getElementById('adminTabBtn');
-            if(adminBtn) adminBtn.style.display = 'none';
             openTab('about');
             alert('Logged out successfully!');
         }
