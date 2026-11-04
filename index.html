@@ -814,21 +814,28 @@ If you are passionate about gaming and eager to become a part of our growing leg
             </ul>
         </div>
 
-        <!-- 🔴 8. YOUTUBE LIVE EMBED SECTION 🔴 -->
+        <!-- 🔴 8. YOUTUBE LIVE EMBED SECTION (Fixed No-Bot Sign-in Bypass) 🔴 -->
         <div id="live" class="section-content">
             <h2><span class="neon-text">|</span> Watch Our Tournaments Live</h2>
             <div class="custom-box" style="text-align: center;">
                 <h3>🔴 EXECUTORS JR LIVE STREAM</h3>
                 <p>අපේ ලයිව් මැච් එක මෙතනින් නරඹන්න!</p>
                 
-                <!-- Dynamic YouTube Live Embed Player -->
-                <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; margin-top: 15px; border-radius: 8px; overflow: hidden; border: 2px solid var(--theme-color);">
-                    <iframe id="liveFrameEmbed" src="https://www.youtube.com/embed/live_stream?channel=UC2hBb5UrK6gAO1i3B" 
-                            title="YouTube Live Player" 
-                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen>
-                    </iframe>
+                <!-- Direct Embed Container with Watch on YouTube Fallback Button -->
+                <div style="margin-top: 15px;">
+                    <div id="liveEmbedWrapper" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 8px; overflow: hidden; border: 2px solid var(--theme-color); background: #000;">
+                        <iframe id="liveFrameEmbed" src="" 
+                                title="YouTube Live Player" 
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <a id="directWatchBtn" href="https://www.youtube.com" target="_blank" class="styled-action-btn" style="background-color: #ff0000; border-color: #ff3333; color: #fff;">
+                            🔴 Watch Live Directly on YouTube App / Browser
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1100,7 +1107,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 localStorage.removeItem('exjr_login_date');
             }
 
-            // Fetch Live Link from Google Sheet
+            // Fetch Live Link from Google Sheet & configure iframe / direct watch button
             fetch(WEB_APP_URL + '?action=getLive')
                 .then(res => res.text())
                 .then(link => {
@@ -1109,8 +1116,12 @@ If you are passionate about gaming and eager to become a part of our growing leg
                         if(videoId.includes('youtu.be/')) videoId = videoId.split('youtu.be/')[1].split('?')[0];
                         else if(videoId.includes('watch?v=')) videoId = videoId.split('watch?v=')[1].split('&')[0];
                         else if(videoId.includes('embed/')) videoId = videoId.split('embed/')[1].split('?')[0];
+                        
                         const embed = document.getElementById('liveFrameEmbed');
-                        if(embed) embed.src = 'https://www.youtube.com/embed/' + videoId;
+                        if(embed) embed.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=0&rel=0&modestbranding=1';
+                        
+                        const directBtn = document.getElementById('directWatchBtn');
+                        if(directBtn) directBtn.href = 'https://www.youtube.com/watch?v=' + videoId;
                     }
                 }).catch(err => console.log(err));
 
@@ -1224,7 +1235,11 @@ If you are passionate about gaming and eager to become a part of our growing leg
             .then(res => res.text())
             .then(response => {
                 const embed = document.getElementById('liveFrameEmbed');
-                if(embed) embed.src = 'https://www.youtube.com/embed/' + videoId;
+                if(embed) embed.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=0&rel=0&modestbranding=1';
+                
+                const directBtn = document.getElementById('directWatchBtn');
+                if(directBtn) directBtn.href = 'https://www.youtube.com/watch?v=' + videoId;
+                
                 alert('Live Stream Link Saved to Cloud Successfully! 🔴');
             }).catch(err => alert('Error saving live link!'));
         }
