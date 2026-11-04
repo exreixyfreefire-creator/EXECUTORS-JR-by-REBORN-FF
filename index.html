@@ -146,7 +146,7 @@
             color: #000000 !important;
             border: 2px solid #00cccc !important;
             font-weight: bold;
-            display: none; /* Hidden by default until logged in */
+            display: none; /* Hidden by default */
         }
 
         /* Sections Design */
@@ -286,7 +286,7 @@
             opacity: 1;
             transform: translateY(0);
         }
-        .liquid-search-input {
+        .liquid-search-input, .liquid-textarea {
             width: 100%;
             padding: 14px 20px;
             background: rgba(255, 255, 255, 0.05);
@@ -302,11 +302,15 @@
             transition: 0.3s;
             box-sizing: border-box;
         }
-        .liquid-search-input::placeholder {
+        .liquid-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .liquid-search-input::placeholder, .liquid-textarea::placeholder {
             color: #aaa;
             text-transform: uppercase;
         }
-        .liquid-search-input:focus {
+        .liquid-search-input:focus, .liquid-textarea:focus {
             border-color: var(--theme-color);
             box-shadow: 0 0 15px var(--theme-glow), 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
@@ -330,7 +334,7 @@
         /* Custom Lists */
         .custom-box { background: #1a1a1a; border-left: 4px solid var(--theme-color); padding: 20px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
         .custom-box h3 { margin: 0 0 10px 0; color: var(--theme-color); }
-        .custom-box p { margin: 0; color: #ccc; }
+        .custom-box p { margin: 0; color: #ccc; white-space: pre-line; }
         ul.rules-list { list-style: none; padding: 0; }
         ul.rules-list li { background: #1a1a1a; margin-bottom: 10px; padding: 15px; border-radius: 5px; border: 1px solid #333; display: flex; align-items: center; gap: 15px; }
         ul.rules-list li::before { content: '🔥'; font-size: 1.2em; }
@@ -347,7 +351,7 @@
             background-color: #111; border-left: 4px solid var(--theme-color); padding: 20px;
             margin-bottom: 20px; border-radius: 0 0 8px 8px; display: none; animation: fadeIn 0.3s ease-in-out;
         }
-        .folder-content p { margin: 8px 0; color: #ccc; font-family: sans-serif; }
+        .folder-content p { margin: 8px 0; color: #ccc; font-family: sans-serif; white-space: pre-line; }
         .folder-content strong { color: #fff; }
         .match-photos { display: flex; gap: 15px; margin-top: 15px; overflow-x: auto; padding-bottom: 10px; }
         .match-photos img {
@@ -526,8 +530,6 @@
             <button class="tab-btn" onclick="openTab('rules')">Join & Rules</button>
             <button class="tab-btn live-tab" onclick="openTab('live')">🔴 Watch Our Tournaments Live</button>
             <button class="tab-btn topup-tab" onclick="openTab('topup')">💎 BENA x CHALA TOPUP STORE</button>
-            <!-- Admin Panel Tab (Hidden until login) -->
-            <button id="adminTabBtn" class="tab-btn admin-tab" onclick="openTab('adminpanel')">⚙️ Admin Panel</button>
         </div>
     </header>
 
@@ -763,9 +765,14 @@ If you are passionate about gaming and eager to become a part of our growing leg
             </div>
         </div>
 
-        <!-- ⚙️ 10. ADMIN PANEL SECTION (Visible when logged in) ⚙️ -->
+        <!-- ⚙️ 10. ADMIN PANEL SECTION (Separate Admin View) ⚙️ -->
         <div id="adminpanel" class="section-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <button class="whatsapp-buy-btn" style="max-width: 150px; background-color: var(--theme-color); color: #000;" onclick="adminBackToHome()">⬅️ Back to Home</button>
+                <button class="whatsapp-buy-btn" style="max-width: 150px; background-color: #ff3333; color: #fff;" onclick="adminLogout()">Log Out 🚪</button>
+            </div>
             <h2><span class="neon-text">|</span> Admin Control Center</h2>
+            
             <div class="custom-box">
                 <h3 style="color: var(--theme-color);">🔴 Update YouTube Live Link</h3>
                 <p>ඔබේ YouTube Live Video ID එක (හෝ Channel ID) මෙහි ඇතුළත් කර Save කරන්න:</p>
@@ -774,10 +781,10 @@ If you are passionate about gaming and eager to become a part of our growing leg
             </div>
 
             <div class="custom-box" style="margin-top: 20px;">
-                <h3 style="color: var(--theme-color);">🏆 Add 4th+ Match Result Preset</h3>
+                <h3 style="color: var(--theme-color);">🏆 Add Match Result Preset</h3>
                 <input type="text" id="resMatchTitle" class="liquid-search-input" placeholder="Match Title (e.g. 4th Match - A vs B)" style="margin-bottom: 10px;">
                 <input type="text" id="resMatchStatus" class="liquid-search-input" placeholder="Result Status (e.g. 🔥 BOOYAH! (VICTORY))" style="margin-bottom: 10px;">
-                <input type="text" id="resMatchDetails" class="liquid-search-input" placeholder="Details (Mode, Map, Date, etc.)" style="margin-bottom: 10px;">
+                <textarea id="resMatchDetails" class="liquid-textarea" placeholder="Enter match details (Press Enter for new lines)..." style="margin-bottom: 10px;"></textarea>
                 <label style="display: block; margin-bottom: 5px; color: var(--theme-color);">Upload Match Screenshot (SS):</label>
                 <input type="file" id="resMatchImage" accept="image/*" class="liquid-search-input" style="margin-bottom: 10px;">
                 <button class="whatsapp-buy-btn" onclick="addNewMatchResultPreset()">Add Match Result Preset ➕</button>
@@ -787,12 +794,8 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <h3 style="color: var(--theme-color);">📅 Add Match Schedule Preset</h3>
                 <input type="text" id="schTitle" class="liquid-search-input" placeholder="Match Title (e.g. EXECUTORS JR vs TEAM X)" style="margin-bottom: 10px;">
                 <input type="text" id="schDate" class="liquid-search-input" placeholder="Date & Time (e.g. 2026 November 10 | 09:00 PM)" style="margin-bottom: 10px;">
-                <input type="text" id="schType" class="liquid-search-input" placeholder="Type / Leaders Info" style="margin-bottom: 10px;">
+                <textarea id="schType" class="liquid-textarea" placeholder="Enter schedule description / type / leaders info..." style="margin-bottom: 10px;"></textarea>
                 <button class="whatsapp-buy-btn" onclick="addNewSchedulePreset()">Add Schedule Preset ➕</button>
-            </div>
-
-            <div style="text-align: center; margin-top: 30px;">
-                <button class="whatsapp-buy-btn" style="background-color: #ff3333; color: #fff; max-width: 200px;" onclick="adminLogout()">Log Out 🚪</button>
             </div>
         </div>
 
@@ -1017,8 +1020,17 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
-        // 💾 Persistent Storage Initialization on Page Load 💾
+        // 💾 Persistent Storage Initialization with Auto Daily Logout & Sync Check 💾
         window.addEventListener('DOMContentLoaded', () => {
+            const todayStr = new Date().toDateString();
+            const lastLoginDate = localStorage.getItem('exjr_login_date');
+            
+            // Auto logout if day has changed
+            if (lastLoginDate !== todayStr) {
+                localStorage.removeItem('exjr_is_admin');
+                localStorage.removeItem('exjr_login_date');
+            }
+
             // Restore Live Link
             const savedLiveId = localStorage.getItem('exjr_live_id');
             if(savedLiveId) {
@@ -1026,22 +1038,45 @@ If you are passionate about gaming and eager to become a part of our growing leg
             }
 
             // Restore Admin Match Results
-            const savedResults = JSON.parse(localStorage.getItem('exjr_match_results') || '[]');
-            savedResults.forEach((res, idx) => {
-                appendMatchResultHTML(res.title, res.status, res.details, res.imgData, 'res_' + idx);
-            });
+            loadAdminResults();
 
             // Restore Admin Schedules
-            const savedSchedules = JSON.parse(localStorage.getItem('exjr_schedules') || '[]');
-            savedSchedules.forEach((sch) => {
-                appendScheduleHTML(sch.title, sch.date, sch.type);
-            });
+            loadAdminSchedules();
 
             // Check Admin Login State
             if(localStorage.getItem('exjr_is_admin') === 'true') {
                 document.getElementById('adminTabBtn').style.display = 'inline-block';
             }
         });
+
+        // Listen to storage changes for cross-device/tab sync
+        window.addEventListener('storage', (e) => {
+            if(e.key === 'exjr_live_id') {
+                if(e.newValue) document.getElementById('liveFrameEmbed').src = 'https://www.youtube.com/embed/' + e.newValue;
+            } else if(e.key === 'exjr_match_results') {
+                loadAdminResults();
+            } else if(e.key === 'exjr_schedules') {
+                loadAdminSchedules();
+            }
+        });
+
+        function loadAdminResults() {
+            const container = document.getElementById('adminResultsContainer');
+            container.innerHTML = '';
+            const savedResults = JSON.parse(localStorage.getItem('exjr_match_results') || '[]');
+            savedResults.forEach((res, idx) => {
+                appendMatchResultHTML(res.title, res.status, res.details, res.imgData, 'res_' + idx);
+            });
+        }
+
+        function loadAdminSchedules() {
+            const container = document.getElementById('adminSchedulesContainer');
+            container.innerHTML = '';
+            const savedSchedules = JSON.parse(localStorage.getItem('exjr_schedules') || '[]');
+            savedSchedules.forEach((sch) => {
+                appendScheduleHTML(sch.title, sch.date, sch.type);
+            });
+        }
 
         // 🔑 Admin Login / Logout Logic 🔑
         function openAdminModal() {
@@ -1059,6 +1094,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             const p = document.getElementById('adminPass').value.trim();
             if(u === 'exjrbyrebornff' && p === '19742@Januzz1#') {
                 localStorage.setItem('exjr_is_admin', 'true');
+                localStorage.setItem('exjr_login_date', new Date().toDateString());
                 document.getElementById('adminTabBtn').style.display = 'inline-block';
                 closeAdminModal();
                 openTab('adminpanel');
@@ -1069,9 +1105,13 @@ If you are passionate about gaming and eager to become a part of our growing leg
         }
         function adminLogout() {
             localStorage.removeItem('exjr_is_admin');
+            localStorage.removeItem('exjr_login_date');
             document.getElementById('adminTabBtn').style.display = 'none';
             openTab('about');
             alert('Logged out successfully!');
+        }
+        function adminBackToHome() {
+            openTab('about');
         }
 
         // 🔴 Save Live Stream Link
@@ -1081,7 +1121,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 alert('Please enter a valid YouTube Video ID or URL!');
                 return;
             }
-            // Extract video ID if full URL is pasted
             let videoId = linkInput;
             if(linkInput.includes('youtu.be/')) {
                 videoId = linkInput.split('youtu.be/')[1].split('?')[0];
@@ -1128,7 +1167,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             savedResults.push(newRes);
             localStorage.setItem('exjr_match_results', JSON.stringify(savedResults));
 
-            appendMatchResultHTML(title, status, details, imgData, uniqueId);
+            loadAdminResults();
             alert('Match Result Preset Added Successfully! 🏆');
             document.getElementById('resMatchTitle').value = '';
             document.getElementById('resMatchStatus').value = '';
@@ -1150,9 +1189,9 @@ If you are passionate about gaming and eager to become a part of our growing leg
             let colorStyle = status.toLowerCase().includes('defeat') ? 'color: #ff3333;' : 'color: #00ff00;';
             let html = `<h3 style="${colorStyle}">${status}</h3>`;
             if(details) {
-                const parts = details.split(',');
-                parts.forEach(p => {
-                    html += `<p><strong>${p.trim()}</strong></p>`;
+                const lines = details.split('\n');
+                lines.forEach(line => {
+                    if(line.trim()) html += `<p><strong>${line.trim()}</strong></p>`;
                 });
             }
             if(imgData) {
@@ -1179,7 +1218,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             savedSchedules.push({ title, date, type });
             localStorage.setItem('exjr_schedules', JSON.stringify(savedSchedules));
 
-            appendScheduleHTML(title, date, type);
+            loadAdminSchedules();
             alert('Match Schedule Preset Added Successfully! 📅');
             document.getElementById('schTitle').value = '';
             document.getElementById('schDate').value = '';
@@ -1191,10 +1230,20 @@ If you are passionate about gaming and eager to become a part of our growing leg
             const box = document.createElement('div');
             box.className = 'custom-box';
             box.style.marginTop = '15px';
+            
+            let formattedType = '';
+            if(type) {
+                const lines = type.split('\n');
+                lines.forEach(l => {
+                    if(l.trim()) formattedType += `<p>${l.trim()}</p>`;
+                });
+            }
+
             box.innerHTML = `
                 <h3>${title}</h3>
                 <p>📅 <strong>Date:</strong> ${date}</p>
-                <p>📍 <strong>Type:</strong> ${type}</p>
+                <p>📍 <strong>Type / Info:</strong></p>
+                ${formattedType}
             `;
             container.appendChild(box);
         }
@@ -1394,7 +1443,13 @@ If you are passionate about gaming and eager to become a part of our growing leg
             for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
             
             document.getElementById(tabName).classList.add("active");
-            event.currentTarget.classList.add("active");
+            
+            // Highlight matching button if exists
+            for (let i = 0; i < buttons.length; i++) {
+                if(buttons[i].getAttribute('onclick') && buttons[i].getAttribute('onclick').includes(tabName)) {
+                    buttons[i].classList.add('active');
+                }
+            }
 
             // Show Cart Widget ONLY on Topup Tab
             const cartWidget = document.getElementById('cartWidget');
@@ -1402,6 +1457,17 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 cartWidget.style.display = 'flex';
             } else {
                 cartWidget.style.display = 'none';
+            }
+
+            // Hide/Show Theme Switcher and Effects for Admin Panel view
+            const themeSwitcher = document.querySelector('.theme-switcher');
+            const effectControls = document.querySelector('.effect-controls');
+            if (tabName === 'adminpanel') {
+                if(themeSwitcher) themeSwitcher.style.display = 'none';
+                if(effectControls) effectControls.style.display = 'none';
+            } else {
+                if(themeSwitcher) themeSwitcher.style.display = 'flex';
+                if(effectControls) effectControls.style.display = 'flex';
             }
         }
 
