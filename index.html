@@ -1,24 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  window.OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "eeaf7dd-2c5a-4e21-b68f-bae4b51523c5",
-    });
-  });
-</script>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_MEASUREMENT_ID"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!-- Firebase App SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <!-- Firebase Messaging SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
 
-  gtag('config', 'G-QKYJEZ57XN');
-</script>
+    <script>
+      // Firebase Initialize කිරීම
+      const firebaseConfig = {
+        apiKey: "AIzaSyDs5ElyAEFpBPJjhNAxwVGWsvDHmzA4KWE",
+        authDomain: "executors-junior.firebaseapp.com",
+        projectId: "executors-junior",
+        storageBucket: "executors-junior.firebasestorage.app",
+        messagingSenderId: "1894229180027",
+        appId: "1:1894229180027:web:140a7a5934166a786c2cda"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const messaging = firebase.messaging();
+
+      // Notification Permission ඉල්ලා Token එක ලබා ගැනීම
+      function requestNotificationPermission() {
+        Notification.requestPermission().then((permission) => {
+          if (permission === 'granted') {
+            console.log('Notification permission granted.');
+            messaging.getToken({ 
+              vapidKey: 'BIEyCW4ORrQsA9I-f8DvDm42AM0dloXoSRt6KkL3kPSK0CxHZlh9m2Nv6F-nfK9tsBBIjtn0tMEepbj2uAmCbK0' 
+            }).then((currentToken) => {
+              if (currentToken) {
+                console.log('FCM Token:', currentToken);
+              } else {
+                console.log('No registration token available.');
+              }
+            }).catch((err) => {
+              console.log('An error occurred while retrieving token. ', err);
+            });
+          } else {
+            console.log('Unable to get permission to notify.');
+          }
+        });
+      }
+
+      // සයිට් එක ලෝඩ් වුණාම පර්මිෂන් ඉල්ලීම
+      window.addEventListener('DOMContentLoaded', () => {
+        requestNotificationPermission();
+      });
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_MEASUREMENT_ID"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-QKYJEZ57XN');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Executors Junior - Official Guild</title>
