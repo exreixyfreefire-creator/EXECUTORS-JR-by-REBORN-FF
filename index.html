@@ -20,31 +20,43 @@
       firebase.initializeApp(firebaseConfig);
       const messaging = firebase.messaging();
 
-      // Notification Permission ඉල්ලා Token එක ලබා ගැනීම
-      function requestNotificationPermission() {
-        Notification.requestPermission().then((permission) => {
-          if (permission === 'granted') {
-            console.log('Notification permission granted.');
-            messaging.getToken({ 
-              vapidKey: 'BIEyCW4ORrQsA9I-f8DvDm42AM0dloXoSRt6KkL3kPSK0CxHZlh9m2Nv6F-nfK9tsBBIjtn0tMEepbj2uAmCbK0' 
-            }).then((currentToken) => {
+      // Service Worker එක රෙජිස්ටර් කර සාර්ථක වූ පසු Token එක ලබා ගැනීම
+      function registerServiceWorkerAndGetToken() {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/firebase-messaging-sw.js')
+            .then((registration) => {
+              console.log('Service Worker registered with scope:', registration.scope);
+              
+              // Notification Permission ඉල්ලා Token එක ලබා ගැනීම
+              return Notification.requestPermission().then((permission) => {
+                if (permission === 'granted') {
+                  console.log('Notification permission granted.');
+                  return messaging.getToken({ 
+                    vapidKey: 'BIEyCW4ORrQsA9I-f8DvDm42AM0dloXoSRt6KkL3kPSK0CxHZlh9m2Nv6F-nfK9tsBBIjtn0tMEepbj2uAmCbK0',
+                    serviceWorkerRegistration: registration 
+                  });
+                } else {
+                  console.log('Unable to get permission to notify.');
+                  throw new Error('Permission not granted');
+                }
+              });
+            })
+            .then((currentToken) => {
               if (currentToken) {
                 console.log('FCM Token:', currentToken);
               } else {
                 console.log('No registration token available.');
               }
-            }).catch((err) => {
-              console.log('An error occurred while retrieving token. ', err);
+            })
+            .catch((err) => {
+              console.log('An error occurred while retrieving token or registering SW. ', err);
             });
-          } else {
-            console.log('Unable to get permission to notify.');
-          }
-        });
+        }
       }
 
-      // සයිට් එක ලෝඩ් වුණාම පර්මිෂන් ඉල්ලීම
+      // සයිට් එක ලෝඩ් වුණාම ක්‍රියාත්මක වීම
       window.addEventListener('DOMContentLoaded', () => {
-        requestNotificationPermission();
+        registerServiceWorkerAndGetToken();
       });
     </script>
 
