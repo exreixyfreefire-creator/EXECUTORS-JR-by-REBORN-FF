@@ -340,10 +340,11 @@
         ul.rules-list li::before { content: '🔥'; font-size: 1.2em; }
 
         /* 🔴 Tournament Folders CSS 🔴 */
+        .folder-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
         .folder-btn {
             background-color: #1a1a1a; color: var(--theme-color); border: 1px solid #333; padding: 15px 20px;
             width: 100%; text-align: left; font-size: 1.2em; font-family: 'Oswald', sans-serif;
-            cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.3s;
+            cursor: pointer; border-radius: 8px; transition: 0.3s;
             display: flex; justify-content: space-between; align-items: center;
         }
         .folder-btn:hover { background-color: #2a2a2a; border-color: var(--theme-color); }
@@ -359,6 +360,20 @@
             border: 2px solid #444; transition: 0.3s;
         }
         .match-photos img:hover { border-color: var(--theme-color); transform: scale(1.05); }
+
+        /* Admin Delete & Restore Action Buttons */
+        .delete-item-btn {
+            background: #ff3333; color: #fff; border: none; padding: 10px 14px;
+            border-radius: 8px; cursor: pointer; font-family: 'Oswald', sans-serif; font-weight: bold;
+            transition: 0.2s; display: none;
+        }
+        .delete-item-btn:hover { background: #ff0000; }
+        .restore-item-btn {
+            background: #00ff00; color: #000; border: none; padding: 6px 12px;
+            border-radius: 6px; cursor: pointer; font-family: 'Oswald', sans-serif; font-weight: bold;
+            margin-top: 5px;
+        }
+        .restore-item-btn:hover { background: #00cc00; }
 
         /* Modal (Popup) */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
@@ -797,6 +812,15 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <textarea id="schType" class="liquid-textarea" placeholder="Enter schedule description / type / leaders info..." style="margin-bottom: 10px;"></textarea>
                 <button class="whatsapp-buy-btn" onclick="addNewSchedulePreset()">Add Schedule Preset ➕</button>
             </div>
+
+            <!-- 🗑️ RECYCLE BIN SECTION 🗑️ -->
+            <div class="custom-box" style="margin-top: 30px; border-left-color: #ff3333;">
+                <h3 style="color: #ff3333;">🗑️ Recycle Bin (Deleted Items)</h3>
+                <p>ඉවත් කරන ලද මැච් රිසාල්ට් සහ ශෙඩියුල්ස් මෙහි ඇත. අවශ්‍ය නම් නැවත Restore කරගත හැක.</p>
+                <div id="recycleBinContainer" style="margin-top: 15px;">
+                    <p style="color: #777;">Recycle bin is empty.</p>
+                </div>
+            </div>
         </div>
 
         <!-- 💎 9. BENA x CHALA TOPUP STORE SECTION 💎 -->
@@ -1020,7 +1044,9 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
-        // 💾 Persistent Storage Initialization with Auto Daily Logout & Sync Check 💾
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyOHaSFeACX0MId-ekvvM_P-vyL7Uyx0Ng5XXQfdRKbfG_5gzShipdYfgQZOWZxc8Ve/exec";
+
+        // 💾 Initialization & Google Sheets Sync on Load 💾
         window.addEventListener('DOMContentLoaded', () => {
             const todayStr = new Date().toDateString();
             const lastLoginDate = localStorage.getItem('exjr_login_date');
@@ -1031,17 +1057,21 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 localStorage.removeItem('exjr_login_date');
             }
 
-            // Restore Live Link
-            const savedLiveId = localStorage.getItem('exjr_live_id');
-            if(savedLiveId) {
-                document.getElementById('liveFrameEmbed').src = 'https://www.youtube.com/embed/' + savedLiveId;
-            }
+            // Fetch Live Link from Google Sheet
+            fetch(WEB_APP_URL + '?action=getLive')
+                .then(res => res.text())
+                .then(link => {
+                    if(link && link.trim() !== '') {
+                        let videoId = link.trim();
+                        if(videoId.includes('youtu.be/')) videoId = videoId.split('youtu.be/')[1].split('?')[0];
+                        else if(videoId.includes('watch?v=')) videoId = videoId.split('watch?v=')[1].split('&')[0];
+                        else if(videoId.includes('embed/')) videoId = videoId.split('embed/')[1].split('?')[0];
+                        document.getElementById('liveFrameEmbed').src = 'https://www.youtube.com/embed/' + videoId;
+                    }
+                }).catch(err => console.log(err));
 
-            // Restore Admin Match Results
-            loadAdminResults();
-
-            // Restore Admin Schedules
-            loadAdminSchedules();
+            // Fetch Results and Schedules from Google Sheet
+            loadDataFromCloud();
 
             // Check Admin Login State
             if(localStorage.getItem('exjr_is_admin') === 'true') {
@@ -1049,32 +1079,70 @@ If you are passionate about gaming and eager to become a part of our growing leg
             }
         });
 
-        // Listen to storage changes for cross-device/tab sync
-        window.addEventListener('storage', (e) => {
-            if(e.key === 'exjr_live_id') {
-                if(e.newValue) document.getElementById('liveFrameEmbed').src = 'https://www.youtube.com/embed/' + e.newValue;
-            } else if(e.key === 'exjr_match_results') {
-                loadAdminResults();
-            } else if(e.key === 'exjr_schedules') {
-                loadAdminSchedules();
-            }
-        });
+        function loadDataFromCloud() {
+            // Load Results
+            fetch(WEB_APP_URL + '?action=getResults')
+                .then(res => res.json())
+                .then(data => {
+                    renderResults(data);
+                }).catch(err => console.log(err));
 
-        function loadAdminResults() {
-            const container = document.getElementById('adminResultsContainer');
-            container.innerHTML = '';
-            const savedResults = JSON.parse(localStorage.getItem('exjr_match_results') || '[]');
-            savedResults.forEach((res, idx) => {
-                appendMatchResultHTML(res.title, res.status, res.details, res.imgData, 'res_' + idx);
-            });
+            // Load Schedules
+            fetch(WEB_APP_URL + '?action=getSchedules')
+                .then(res => res.json())
+                .then(data => {
+                    renderSchedules(data);
+                }).catch(err => console.log(err));
         }
 
-        function loadAdminSchedules() {
-            const container = document.getElementById('adminSchedulesContainer');
+        function renderResults(results) {
+            const container = document.getElementById('adminResultsContainer');
+            const binContainer = document.getElementById('recycleBinContainer');
             container.innerHTML = '';
-            const savedSchedules = JSON.parse(localStorage.getItem('exjr_schedules') || '[]');
-            savedSchedules.forEach((sch) => {
-                appendScheduleHTML(sch.title, sch.date, sch.type);
+            if(binContainer) binContainer.innerHTML = '';
+
+            let binHasItems = false;
+
+            results.forEach((res, idx) => {
+                if (res.isDeleted === "true" || res.isDeleted === true) {
+                    binHasItems = true;
+                    if(binContainer) {
+                        binContainer.innerHTML += `
+                            <div style="background: #1a1a1a; padding: 10px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                                <span>🗑️ ${res.title} (${res.status})</span>
+                                <button class="restore-item-btn" onclick="restoreResult(${idx})">Restore ♻️</button>
+                            </div>
+                        `;
+                    }
+                } else {
+                    appendMatchResultHTML(res.title, res.status, res.details, res.imgData, 'res_' + idx, idx);
+                }
+            });
+
+            if(binContainer && !binHasItems) {
+                binContainer.innerHTML = '<p style="color: #777;">Recycle bin is empty.</p>';
+            }
+        }
+
+        function renderSchedules(schedules) {
+            const container = document.getElementById('adminSchedulesContainer');
+            const binContainer = document.getElementById('recycleBinContainer');
+            container.innerHTML = '';
+
+            schedules.forEach((sch, idx) => {
+                if (sch.isDeleted === "true" || sch.isDeleted === true) {
+                    if(binContainer) {
+                        if(binContainer.innerHTML.includes('Recycle bin is empty.')) binContainer.innerHTML = '';
+                        binContainer.innerHTML += `
+                            <div style="background: #1a1a1a; padding: 10px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                                <span>📅 Schedule: ${sch.title}</span>
+                                <button class="restore-item-btn" onclick="restoreSchedule(${idx})">Restore ♻️</button>
+                            </div>
+                        `;
+                    }
+                } else {
+                    appendScheduleHTML(sch.title, sch.date, sch.type, idx);
+                }
             });
         }
 
@@ -1114,7 +1182,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             openTab('about');
         }
 
-        // 🔴 Save Live Stream Link
+        // 🔴 Save Live Stream Link to Google Sheet
         function saveLiveStreamLink() {
             const linkInput = document.getElementById('adminLiveInput').value.trim();
             if(!linkInput) {
@@ -1122,20 +1190,22 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 return;
             }
             let videoId = linkInput;
-            if(linkInput.includes('youtu.be/')) {
-                videoId = linkInput.split('youtu.be/')[1].split('?')[0];
-            } else if(linkInput.includes('watch?v=')) {
-                videoId = linkInput.split('watch?v=')[1].split('&')[0];
-            } else if(linkInput.includes('embed/')) {
-                videoId = linkInput.split('embed/')[1].split('?')[0];
-            }
+            if(linkInput.includes('youtu.be/')) videoId = linkInput.split('youtu.be/')[1].split('?')[0];
+            else if(linkInput.includes('watch?v=')) videoId = linkInput.split('watch?v=')[1].split('&')[0];
+            else if(linkInput.includes('embed/')) videoId = linkInput.split('embed/')[1].split('?')[0];
 
-            localStorage.setItem('exjr_live_id', videoId);
-            document.getElementById('liveFrameEmbed').src = 'https://www.youtube.com/embed/' + videoId;
-            alert('Live Stream Link Saved Successfully! 🔴');
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'saveLive', link: videoId })
+            })
+            .then(res => res.text())
+            .then(response => {
+                document.getElementById('liveFrameEmbed').src = 'https://www.youtube.com/embed/' + videoId;
+                alert('Live Stream Link Saved to Cloud Successfully! 🔴');
+            }).catch(err => alert('Error saving live link!'));
         }
 
-        // 🏆 Add Match Result Preset
+        // 🏆 Add Match Result Preset to Google Sheet
         function addNewMatchResultPreset() {
             const title = document.getElementById('resMatchTitle').value.trim();
             const status = document.getElementById('resMatchStatus').value.trim();
@@ -1150,37 +1220,50 @@ If you are passionate about gaming and eager to become a part of our growing leg
             if(fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const imgData = e.target.result;
-                    saveAndRenderResult(title, status, details, imgData);
+                    sendResultToCloud(title, status, details, e.target.result);
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
-                saveAndRenderResult(title, status, details, '');
+                sendResultToCloud(title, status, details, '');
             }
         }
 
-        function saveAndRenderResult(title, status, details, imgData) {
-            const uniqueId = 'admin_res_' + Date.now();
-            const newRes = { title, status, details, imgData, id: uniqueId };
-
-            let savedResults = JSON.parse(localStorage.getItem('exjr_match_results') || '[]');
-            savedResults.push(newRes);
-            localStorage.setItem('exjr_match_results', JSON.stringify(savedResults));
-
-            loadAdminResults();
-            alert('Match Result Preset Added Successfully! 🏆');
-            document.getElementById('resMatchTitle').value = '';
-            document.getElementById('resMatchStatus').value = '';
-            document.getElementById('resMatchDetails').value = '';
-            document.getElementById('resMatchImage').value = '';
+        function sendResultToCloud(title, status, details, imgData) {
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'saveResult', title, status, details, imgData, isDeleted: false })
+            })
+            .then(res => res.text())
+            .then(response => {
+                loadDataFromCloud();
+                alert('Match Result Added to Cloud Successfully! 🏆');
+                document.getElementById('resMatchTitle').value = '';
+                document.getElementById('resMatchStatus').value = '';
+                document.getElementById('resMatchDetails').value = '';
+                document.getElementById('resMatchImage').value = '';
+            }).catch(err => alert('Error saving result!'));
         }
 
-        function appendMatchResultHTML(title, status, details, imgData, uniqueId) {
+        function appendMatchResultHTML(title, status, details, imgData, uniqueId, index) {
             const container = document.getElementById('adminResultsContainer');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'folder-wrapper';
+
             const btn = document.createElement('button');
             btn.className = 'folder-btn';
             btn.onclick = function() { toggleFolder(uniqueId); };
             btn.innerHTML = `<span>📁 ${title}</span> <span>▼</span>`;
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'delete-item-btn';
+            delBtn.innerText = '🗑️ Delete';
+            delBtn.onclick = function() { deleteResult(index); };
+            if(localStorage.getItem('exjr_is_admin') === 'true') {
+                delBtn.style.display = 'block';
+            }
+
+            wrapper.appendChild(btn);
+            wrapper.appendChild(delBtn);
 
             const content = document.createElement('div');
             content.id = uniqueId;
@@ -1199,11 +1282,11 @@ If you are passionate about gaming and eager to become a part of our growing leg
             }
             content.innerHTML = html;
 
-            container.appendChild(btn);
+            container.appendChild(wrapper);
             container.appendChild(content);
         }
 
-        // 📅 Add Match Schedule Preset
+        // 📅 Add Match Schedule Preset to Google Sheet
         function addNewSchedulePreset() {
             const title = document.getElementById('schTitle').value.trim();
             const date = document.getElementById('schDate').value.trim();
@@ -1214,22 +1297,30 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 return;
             }
 
-            let savedSchedules = JSON.parse(localStorage.getItem('exjr_schedules') || '[]');
-            savedSchedules.push({ title, date, type });
-            localStorage.setItem('exjr_schedules', JSON.stringify(savedSchedules));
-
-            loadAdminSchedules();
-            alert('Match Schedule Preset Added Successfully! 📅');
-            document.getElementById('schTitle').value = '';
-            document.getElementById('schDate').value = '';
-            document.getElementById('schType').value = '';
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'saveSchedule', title, date, type, isDeleted: false })
+            })
+            .then(res => res.text())
+            .then(response => {
+                loadDataFromCloud();
+                alert('Match Schedule Added to Cloud Successfully! 📅');
+                document.getElementById('schTitle').value = '';
+                document.getElementById('schDate').value = '';
+                document.getElementById('schType').value = '';
+            }).catch(err => alert('Error saving schedule!'));
         }
 
-        function appendScheduleHTML(title, date, type) {
+        function appendScheduleHTML(title, date, type, index) {
             const container = document.getElementById('adminSchedulesContainer');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'folder-wrapper';
+            wrapper.style.alignItems = 'flex-start';
+
             const box = document.createElement('div');
             box.className = 'custom-box';
-            box.style.marginTop = '15px';
+            box.style.marginTop = '0';
+            box.style.flexGrow = '1';
             
             let formattedType = '';
             if(type) {
@@ -1245,45 +1336,77 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <p>📍 <strong>Type / Info:</strong></p>
                 ${formattedType}
             `;
-            container.appendChild(box);
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'delete-item-btn';
+            delBtn.innerText = '🗑️ Delete';
+            delBtn.onclick = function() { deleteSchedule(index); };
+            if(localStorage.getItem('exjr_is_admin') === 'true') {
+                delBtn.style.display = 'block';
+            }
+
+            wrapper.appendChild(box);
+            wrapper.appendChild(delBtn);
+            container.appendChild(wrapper);
         }
 
-        // 🛒 Topup Store Cart Logic with Quantity & Minus Support 🛒
-        let selectedPackages = [];
+        // 🗑️ Delete & Restore Functions via Cloud 🗑️
+        function deleteResult(index) {
+            if(confirm('Are you sure you want to move this result to Recycle Bin?')) {
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'deleteResult', index })
+                }).then(() => loadDataFromCloud());
+            }
+        }
+        function restoreResult(index) {
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'restoreResult', index })
+            }).then(() => loadDataFromCloud());
+        }
 
+        function deleteSchedule(index) {
+            if(confirm('Are you sure you want to move this schedule to Recycle Bin?')) {
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'deleteSchedule', index })
+                }).then(() => loadDataFromCloud());
+            }
+        }
+        function restoreSchedule(index) {
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'restoreSchedule', index })
+            }).then(() => loadDataFromCloud());
+        }
+
+        // 🛒 Topup Store Cart Logic 🛒
+        let selectedPackages = [];
         function addPackage(name, price) {
             const existing = selectedPackages.find(p => p.name === name);
-            if (existing) {
-                existing.qty += 1;
-            } else {
-                selectedPackages.push({ name, price, qty: 1 });
-            }
+            if (existing) existing.qty += 1;
+            else selectedPackages.push({ name, price, qty: 1 });
             updatePackageUI();
             updateCartTotal();
         }
-
         function removePackage(name, price) {
             event.stopPropagation();
             const existing = selectedPackages.find(p => p.name === name);
             if (existing) {
                 existing.qty -= 1;
-                if (existing.qty <= 0) {
-                    selectedPackages = selectedPackages.filter(p => p.name !== name);
-                }
+                if (existing.qty <= 0) selectedPackages = selectedPackages.filter(p => p.name !== name);
             }
             updatePackageUI();
             updateCartTotal();
         }
-
         function updatePackageUI() {
             document.querySelectorAll('.package-item').forEach(item => {
                 item.classList.remove('selected');
                 item.querySelector('.pkg-count').innerText = 'x0';
             });
-
             selectedPackages.forEach(p => {
-                const items = document.querySelectorAll('.package-item');
-                items.forEach(item => {
+                document.querySelectorAll('.package-item').forEach(item => {
                     if(item.getAttribute('data-name') === p.name) {
                         item.classList.add('selected');
                         item.querySelector('.pkg-count').innerText = 'x' + p.qty;
@@ -1291,296 +1414,140 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 });
             });
         }
-
         document.querySelectorAll('.package-item').forEach(item => {
             item.addEventListener('click', function(e) {
                 if(e.target.classList.contains('pkg-minus-btn')) return;
-                const name = this.getAttribute('data-name');
-                const price = parseInt(this.getAttribute('data-price'));
-                addPackage(name, price);
+                addPackage(this.getAttribute('data-name'), parseInt(this.getAttribute('data-price')));
             });
         });
-
         function updateCartTotal() {
             let total = selectedPackages.reduce((sum, p) => sum + (p.price * p.qty), 0);
             document.getElementById('cartTotalPrice').innerText = 'LKR ' + total;
         }
-
         function sendToWhatsapp() {
             const gameId = document.getElementById('customerGameId').value.trim();
-            if (!gameId) {
-                alert('කරුණාකර ඔබගේ Free Fire Game ID / UID එක ඇතුළත් කරන්න!');
-                document.getElementById('customerGameId').focus();
-                return;
-            }
-            if (selectedPackages.length === 0) {
-                alert('කරුණාකර ඔබට අවශ්‍ය පැකේජයක් තෝරාගන්න!');
-                return;
-            }
-
+            if (!gameId) { alert('කරුණාකර ඔබගේ Free Fire Game ID / UID එක ඇතුළත් කරන්න!'); document.getElementById('customerGameId').focus(); return; }
+            if (selectedPackages.length === 0) { alert('කරුණාකර ඔබට අවශ්‍ය පැකේජයක් තෝරාගන්න!'); return; }
             let total = selectedPackages.reduce((sum, p) => sum + (p.price * p.qty), 0);
-            let message = `*🔥 BENA x CHALA TOPUP ORDER 🔥*\n\n`;
-            message += `🎮 *Game ID / UID:* ${gameId}\n\n`;
-            message += `📦 *Selected Packages:*\n`;
-            selectedPackages.forEach(p => {
-                message += `- ${p.name} x${p.qty} (LKR ${p.price * p.qty})\n`;
-            });
-            message += `\n💰 *Total Amount:* LKR ${total}\n\n`;
-            message += `✨ මම මේ ටොපප් එක කරගන්න කැමතියි. හරියටම ටොපප් කරලා දෙන්න!`;
-
-            const adminPhone = '94725207523';
-            const encodedUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`;
-            window.open(encodedUrl, '_blank');
+            let message = `*🔥 BENA x CHALA TOPUP ORDER 🔥*\n\n🎮 *Game ID / UID:* ${gameId}\n\n📦 *Selected Packages:*\n`;
+            selectedPackages.forEach(p => { message += `- ${p.name} x${p.qty} (LKR ${p.price * p.qty})\n`; });
+            message += `\n💰 *Total Amount:* LKR ${total}\n\n✨ මම මේ ටොපප් එක කරගන්න කැමතියි. හරියටම ටොපප් කරලා දෙන්න!`;
+            window.open(`https://wa.me/94725207523?text=${encodeURIComponent(message)}`, '_blank');
         }
 
-        // 🕒 Sri Lanka Live Clock Script 🕒
+        // 🕒 Clock & UI helpers 🕒
         function updateSriLankaClock() {
-            const options = { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            const timeString = new Intl.DateTimeFormat('en-US', options).format(new Date());
-            document.getElementById('srilanka-clock').innerText = timeString;
+            document.getElementById('srilanka-clock').innerText = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(new Date());
         }
         setInterval(updateSriLankaClock, 1000);
         updateSriLankaClock();
 
-        // ✨ Scroll Reveal Animation for Liquid Glass Search Bars ✨
-        window.addEventListener('scroll', function() {
-            const boxes = document.querySelectorAll('.liquid-search-box');
-            boxes.forEach(box => {
-                const boxPosition = box.getBoundingClientRect().top;
-                const screenPosition = window.innerHeight / 1.15;
-                if(boxPosition < screenPosition) {
-                    box.classList.add('reveal');
-                }
-            });
-        });
-
-        // 🔍 Filter Roster Table Function
         function filterRosterTable() {
-            const input = document.getElementById('playerSearchInput');
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById('roster-body');
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 0; i < tr.length; i++) {
-                const tdName = tr[i].getElementsByTagName('td')[0];
-                const tdUid = tr[i].getElementsByTagName('td')[1];
-                if (tdName || tdUid) {
-                    const nameText = tdName.textContent || tdName.innerText;
-                    const uidText = tdUid.textContent || tdUid.innerText;
-                    if (nameText.toLowerCase().indexOf(filter) > -1 || uidText.toLowerCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
+            let filter = document.getElementById('playerSearchInput').value.toLowerCase();
+            document.querySelectorAll('#roster-body tr').forEach(tr => {
+                let name = tr.cells[0]?.textContent.toLowerCase() || '';
+                let uid = tr.cells[1]?.textContent.toLowerCase() || '';
+                tr.style.display = (name.includes(filter) || uid.includes(filter)) ? '' : 'none';
+            });
         }
-
-        // 🔍 Filter Guild Wars Table Function
         function filterWarTable() {
-            const input = document.getElementById('warSearchInput');
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById('war-body');
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 0; i < tr.length; i++) {
-                const tdName = tr[i].getElementsByTagName('td')[0];
-                if (tdName) {
-                    const nameText = tdName.textContent || tdName.innerText;
-                    if (nameText.toLowerCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
+            let filter = document.getElementById('warSearchInput').value.toLowerCase();
+            document.querySelectorAll('#war-body tr').forEach(tr => {
+                let name = tr.cells[0]?.textContent.toLowerCase() || '';
+                tr.style.display = name.includes(filter) ? '' : 'none';
+            });
         }
-
-        // 🎨 Theme Switcher Logic 🎨
         function setTheme(themeName) {
             document.body.className = ''; 
-            if (themeName === 'red') {
-                document.body.classList.add('theme-red');
-            } else if (themeName === 'blue') {
-                document.body.classList.add('theme-blue');
-            }
+            if (themeName === 'red') document.body.classList.add('theme-red');
+            else if (themeName === 'blue') document.body.classList.add('theme-blue');
         }
-
-        // 🎵 Music Player & Mute/Unmute Control Logic 🎵
         function toggleMusic() {
-            const music = document.getElementById('bg-music');
-            const btn = document.getElementById('play-pause-btn');
-            if (music.paused) {
-                music.play();
-                btn.innerText = '🔊'; 
-            } else {
-                music.pause();
-                btn.innerText = '🔇'; 
-            }
+            let m = document.getElementById('bg-music');
+            let b = document.getElementById('play-pause-btn');
+            if (m.paused) { m.play(); b.innerText = '🔊'; } else { m.pause(); b.innerText = '🔇'; }
+        }
+        function toggleEffectsMenu() { document.getElementById('effects-list').classList.toggle('show'); }
+        function toggleFolder(id) {
+            let c = document.getElementById(id);
+            c.style.display = (c.style.display === "block") ? "none" : "block";
         }
 
-        // ✨ Effects Menu Toggle Logic ✨
-        function toggleEffectsMenu() {
-            const list = document.getElementById('effects-list');
-            list.classList.toggle('show');
-        }
-
-        // 🔴 Folder Toggle Logic 🔴
-        function toggleFolder(folderId) {
-            const folderContent = document.getElementById(folderId);
-            if (folderContent.style.display === "block") {
-                folderContent.style.display = "none";
-            } else {
-                folderContent.style.display = "block";
-            }
-        }
-
-        // Tab Switching & Modal Logic
         function openTab(tabName) {
-            const sections = document.getElementsByClassName("section-content");
-            for (let i = 0; i < sections.length; i++) sections[i].classList.remove("active");
-            const buttons = document.getElementsByClassName("tab-btn");
-            for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
-            
+            document.querySelectorAll(".section-content").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
             document.getElementById(tabName).classList.add("active");
             
-            // Highlight matching button if exists
-            for (let i = 0; i < buttons.length; i++) {
-                if(buttons[i].getAttribute('onclick') && buttons[i].getAttribute('onclick').includes(tabName)) {
-                    buttons[i].classList.add('active');
-                }
-            }
+            document.querySelectorAll(".tab-btn").forEach(el => {
+                if(el.getAttribute('onclick') && el.getAttribute('onclick').includes(tabName)) el.classList.add('active');
+            });
 
-            // Show Cart Widget ONLY on Topup Tab
-            const cartWidget = document.getElementById('cartWidget');
-            if (tabName === 'topup') {
-                cartWidget.style.display = 'flex';
-            } else {
-                cartWidget.style.display = 'none';
-            }
-
-            // Hide/Show Theme Switcher and Effects for Admin Panel view
-            const themeSwitcher = document.querySelector('.theme-switcher');
-            const effectControls = document.querySelector('.effect-controls');
-            if (tabName === 'adminpanel') {
-                if(themeSwitcher) themeSwitcher.style.display = 'none';
-                if(effectControls) effectControls.style.display = 'none';
-            } else {
-                if(themeSwitcher) themeSwitcher.style.display = 'flex';
-                if(effectControls) effectControls.style.display = 'flex';
-            }
+            document.getElementById('cartWidget').style.display = (tabName === 'topup') ? 'flex' : 'none';
+            let ts = document.querySelector('.theme-switcher'), ec = document.querySelector('.effect-controls');
+            if (tabName === 'adminpanel') { if(ts) ts.style.display = 'none'; if(ec) ec.style.display = 'none'; }
+            else { if(ts) ts.style.display = 'flex'; if(ec) ec.style.display = 'flex'; }
         }
 
         const profileData = {
-            'leader': { name: 'EX xKENZO', role: 'Guild Leader', uid: 'UID: 4993623044', desc: 'Mama tamai jr eke kariya hutto', mainImg: 'leader.jpg', gallery: [] },
-            'acting': { name: 'EX xREBORN', role: 'Acting Leader', uid: 'UID: 1610424431', desc: 'Cri Acting', mainImg: 'acting.jpg', gallery: [] },
-            'officer1': { name: 'EX xBENA', role: 'Officer', uid: 'UID: 1942683005', desc: 'Donilage Sihina Kumaraya. Man Bena ', mainImg: 'bena.jpg', gallery: [] },
-            'officer2': { name: 'EX xMAN!KH', role: 'Officer', uid: 'UID: 2143389510', desc: 'T4T mage. Mn T4T ge', mainImg: 'manikh.jpg', gallery: [] },
-            'officer3': { name: 'EX xT4T', role: 'Officer', uid: 'UID: 9344741237', desc: 'Manika mge. Mn Manikage', mainImg: 't4t.jpg', gallery: [] }
+            'leader': { name: 'EX xKENZO', role: 'Guild Leader', uid: 'UID: 4993623044', desc: 'Mama tamai jr eke kariya hutto', mainImg: 'leader.jpg' },
+            'acting': { name: 'EX xREBORN', role: 'Acting Leader', uid: 'UID: 1610424431', desc: 'Cri Acting', mainImg: 'acting.jpg' },
+            'officer1': { name: 'EX xBENA', role: 'Officer', uid: 'UID: 1942683005', desc: 'Donilage Sihina Kumaraya. Man Bena ', mainImg: 'bena.jpg' },
+            'officer2': { name: 'EX xMAN!KH', role: 'Officer', uid: 'UID: 2143389510', desc: 'T4T mage. Mn T4T ge', mainImg: 'manikh.jpg' },
+            'officer3': { name: 'EX xT4T', role: 'Officer', uid: 'UID: 9344741237', desc: 'Manika mge. Mn Manikage', mainImg: 't4t.jpg' }
         };
-
-        function openModal(memberId) {
-            const data = profileData[memberId];
-            document.getElementById('modal-img').src = data.mainImg;
-            document.getElementById('modal-name').innerText = data.name;
-            document.getElementById('modal-role').innerText = data.role;
-            document.getElementById('modal-uid').innerText = data.uid;
-            document.getElementById('modal-desc').innerText = data.desc;
+        function openModal(id) {
+            let d = profileData[id];
+            document.getElementById('modal-img').src = d.mainImg;
+            document.getElementById('modal-name').innerText = d.name;
+            document.getElementById('modal-role').innerText = d.role;
+            document.getElementById('modal-uid').innerText = d.uid;
+            document.getElementById('modal-desc').innerText = d.desc;
             document.getElementById('profileModal').style.display = 'block';
         }
         function closeModal() { document.getElementById('profileModal').style.display = 'none'; }
-        window.onclick = function(event) { if (event.target == document.getElementById('profileModal')) closeModal(); }
 
-        // 1. Google Sheet Fetch (Player Roster)
-        const rosterCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8_adUIsVD8scDRnyNk_9FWUO_4_4rCdnwZx6porv-fcGb7XS7-hnNq0mQUySqvJsrYCXqX33Eetmh/pub?output=csv';
-        fetch(rosterCsvUrl)
-            .then(response => response.text())
-            .then(data => {
-                const rows = data.split('\n');
+        // Fetch Google Sheet Roster & Wars
+        fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS8_adUIsVD8scDRnyNk_9FWUO_4_4rCdnwZx6porv-fcGb7XS7-hnNq0mQUySqvJsrYCXqX33Eetmh/pub?output=csv')
+            .then(res => res.text()).then(data => {
                 let html = '';
-                for(let i = 0; i < rows.length; i++) {
-                    let cols = rows[i].split(',');
-                    if(cols.length >= 5) {
-                        let firstCol = cols[0].replace(/"/g, '').trim();
-                        if(firstCol.toLowerCase().includes('name') || firstCol.toLowerCase().includes('squad') || firstCol.toLowerCase().includes('roster') || firstCol === '') continue;
-                        html += `<tr>
-                            <td style="font-weight: bold;">${cols[0].replace(/"/g, '')}</td>
-                            <td style="color: #aaa;">${cols[1].replace(/"/g, '')}</td>
-                            <td style="color: var(--theme-color);">${cols[2].replace(/"/g, '')}</td>
-                            <td>${cols[3].replace(/"/g, '')}</td>
-                            <td>${cols[4].replace(/"/g, '')}</td>
-                        </tr>`;
+                data.split('\n').forEach(row => {
+                    let cols = row.split(',');
+                    if(cols.length >= 5 && !cols[0].toLowerCase().includes('name') && cols[0].trim() !== '') {
+                        html += `<tr><td style="font-weight: bold;">${cols[0].replace(/"/g,'')}</td><td style="color: #aaa;">${cols[1].replace(/"/g,'')}</td><td style="color: var(--theme-color);">${cols[2].replace(/"/g,'')}</td><td>${cols[3].replace(/"/g,'')}</td><td>${cols[4].replace(/"/g,'')}</td></tr>`;
                     }
-                }
-                document.getElementById('roster-body').innerHTML = html;
+                });
+                document.getElementById('roster-body').innerHTML = html || '<tr><td colspan="5">No data</td></tr>';
             });
 
-        // 2. Google Sheet Fetch (Guild Wars Points)
-        const warPointsCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR5xMPnxRcAAEJ7mVPtHQRBe4ok9DNIfch_IVhcsxxIR82EK725oFEgR-TudZY8jxp17LdhXMGTiEmz/pub?gid=0&single=true&output=csv'; 
-        
-        fetch(warPointsCsvUrl)
-            .then(response => {
-                if(!response.ok) throw new Error("Link update කර නැත");
-                return response.text();
-            })
-            .then(data => {
-                const rows = data.split('\n');
+        fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vR5xMPnxRcAAEJ7mVPtHQRBe4ok9DNIfch_IVhcsxxIR82EK725oFEgR-TudZY8jxp17LdhXMGTiEmz/pub?gid=0&single=true&output=csv')
+            .then(res => res.text()).then(data => {
                 let html = '';
-                for(let i = 0; i < rows.length; i++) {
-                    let cols = rows[i].split(',');
-                    if(cols.length >= 2) {
-                        let firstCol = cols[0].replace(/"/g, '').trim();
-                        if(firstCol.toLowerCase().includes('name') || firstCol === '' || firstCol.toLowerCase().includes('player')) continue;
-                        html += `<tr>
-                            <td style="font-weight: bold;">${cols[0].replace(/"/g, '')}</td>
-                            <td class="points-text">${cols[1].replace(/"/g, '')}</td>
-                        </tr>`;
+                data.split('\n').forEach(row => {
+                    let cols = row.split(',');
+                    if(cols.length >= 2 && !cols[0].toLowerCase().includes('name') && cols[0].trim() !== '') {
+                        html += `<tr><td style="font-weight: bold;">${cols[0].replace(/"/g,'')}</td><td class="points-text">${cols[1].replace(/"/g,'')}</td></tr>`;
                     }
-                }
-                if(html === '') html = '<tr><td colspan="2">තාම Data දාලා නෑ</td></tr>';
-                document.getElementById('war-body').innerHTML = html;
-            })
-            .catch(error => {
-                document.getElementById('war-body').innerHTML = '<tr><td colspan="2" style="color: #ff3333;">කරුණාකර අලුත් Sheet එකේ CSV Link එක කෝඩ් එකට ඇතුලත් කරන්න.</td></tr>';
-            });
+                });
+                document.getElementById('war-body').innerHTML = html || '<tr><td colspan="2">No data</td></tr>';
+            }).catch(() => {});
 
-        // MANUAL EFFECT LOGIC
         function setEffect(type) {
             const container = document.getElementById('effect-container');
-            container.innerHTML = ''; 
-            container.className = 'effect-layer'; 
-
-            if (type === 'sun') {
-                container.classList.add('sunshine');
-            } else if (type === 'rain' || type === 'storm') {
+            container.innerHTML = ''; container.className = 'effect-layer'; 
+            if (type === 'sun') container.classList.add('sunshine');
+            else if (type === 'rain' || type === 'storm') {
                 if (type === 'storm') container.classList.add('stormy');
                 for (let i = 0; i < 70; i++) {
-                    let drop = document.createElement('div');
-                    drop.className = 'raindrop';
-                    drop.style.left = Math.random() * 100 + 'vw';
-                    drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
-                    drop.style.animationDelay = Math.random() * 2 + 's';
-                    container.appendChild(drop);
+                    let d = document.createElement('div'); d.className = 'raindrop';
+                    d.style.left = Math.random() * 100 + 'vw'; d.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
+                    container.appendChild(d);
                 }
-            } else if (type === 'snow') {
-                for (let i = 0; i < 50; i++) {
-                    let particle = document.createElement('div');
-                    particle.className = 'seasonal-particle';
-                    particle.innerText = '❄️';
-                    particle.style.left = Math.random() * 100 + 'vw';
-                    particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
-                    particle.style.animationDelay = Math.random() * 5 + 's';
-                    container.appendChild(particle);
-                }
-            } else if (type === 'flower') {
+            } else if (type === 'snow' || type === 'flower') {
                 for (let i = 0; i < 40; i++) {
-                    let particle = document.createElement('div');
-                    particle.className = 'seasonal-particle';
-                    particle.innerText = '🌸';
-                    particle.style.left = Math.random() * 100 + 'vw';
-                    particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
-                    particle.style.animationDelay = Math.random() * 5 + 's';
-                    container.appendChild(particle);
+                    let p = document.createElement('div'); p.className = 'seasonal-particle';
+                    p.innerText = (type === 'snow') ? '❄️' : '🌸';
+                    p.style.left = Math.random() * 100 + 'vw'; p.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                    container.appendChild(p);
                 }
             }
         }
