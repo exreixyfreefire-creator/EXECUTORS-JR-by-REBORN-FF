@@ -814,16 +814,16 @@ If you are passionate about gaming and eager to become a part of our growing leg
             </ul>
         </div>
 
-        <!-- 🔴 8. YOUTUBE LIVE EMBED SECTION (Fixed No-Bot Sign-in Bypass) 🔴 -->
+        <!-- 🔴 8. YOUTUBE LIVE EMBED SECTION 🔴 -->
         <div id="live" class="section-content">
             <h2><span class="neon-text">|</span> Watch Our Tournaments Live</h2>
             <div class="custom-box" style="text-align: center;">
                 <h3>🔴 EXECUTORS JR LIVE STREAM</h3>
                 <p>අපේ ලයිව් මැච් එක මෙතනින් නරඹන්න!</p>
                 
-                <!-- Direct Embed Container with Watch on YouTube Fallback Button -->
+                <!-- Dynamic YouTube Live Embed Player with Direct Watch Option -->
                 <div style="margin-top: 15px;">
-                    <div id="liveEmbedWrapper" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 8px; overflow: hidden; border: 2px solid var(--theme-color); background: #000;">
+                    <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 8px; overflow: hidden; border: 2px solid var(--theme-color); background: #000;">
                         <iframe id="liveFrameEmbed" src="" 
                                 title="YouTube Live Player" 
                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
@@ -1095,18 +1095,10 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyOHaSFeACX0MId-ekvvM_P-vyL7Uyx0Ng5XXQfdRKbfG_5gzShipdYfgQZOWZxc8Ve/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzWjTST3hHX7gV6eo8Q3UptOXkHDW1R-mpxFqEFBtPAnWToYuc3hXXSkCdFfzvKOUVcbQ/exec";
 
-        // 💾 Initialization & Google Sheets Sync on Load 💾
+        // 💾 Initialization & Cloud Session Check on Load 💾
         window.addEventListener('DOMContentLoaded', () => {
-            const todayStr = new Date().toDateString();
-            const lastLoginDate = localStorage.getItem('exjr_login_date');
-            
-            if (lastLoginDate !== todayStr) {
-                localStorage.removeItem('exjr_is_admin');
-                localStorage.removeItem('exjr_login_date');
-            }
-
             // Fetch Live Link from Google Sheet & configure iframe / direct watch button
             fetch(WEB_APP_URL + '?action=getLive')
                 .then(res => res.text())
@@ -1127,9 +1119,22 @@ If you are passionate about gaming and eager to become a part of our growing leg
 
             loadDataFromCloud();
 
-            // Check Admin Login State on page load
-            if(localStorage.getItem('exjr_is_admin') === 'true') {
-                openTab('adminpanel');
+            // Check active session with cloud backend for Single-Session Lock
+            const savedToken = localStorage.getItem('exjr_admin_token');
+            const savedUser = localStorage.getItem('exjr_admin_user');
+            if(savedToken && savedUser) {
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'checkSession', username: savedUser, token: savedToken })
+                })
+                .then(res => res.text())
+                .then(status => {
+                    if(status.trim() === 'valid') {
+                        openTab('adminpanel');
+                    } else {
+                        adminLogoutLocally();
+                    }
+                }).catch(() => {});
             }
         });
 
@@ -1167,9 +1172,9 @@ If you are passionate about gaming and eager to become a part of our growing leg
             });
         }
 
-        // 🔑 Admin Login / Logout Logic with Buffering Animation 🔑
+        // 🔑 Cloud Secure Admin Login with Single-Session Control 🔑
         function openAdminModal() {
-            if(localStorage.getItem('exjr_is_admin') === 'true') {
+            if(localStorage.getItem('exjr_admin_token')) {
                 openTab('adminpanel');
             } else {
                 const modal = document.getElementById('adminLoginModal');
@@ -1180,38 +1185,63 @@ If you are passionate about gaming and eager to become a part of our growing leg
             const modal = document.getElementById('adminLoginModal');
             if(modal) modal.style.display = 'none';
         }
+
         function verifyAdminLogin() {
             const u = document.getElementById('adminUser').value.trim();
             const p = document.getElementById('adminPass').value.trim();
             const btn = document.getElementById('loginSubmitBtn');
             
-            if(u === 'exjrbyrebornff' && p === '19742@Januzz1#') {
-                // Add buffering spinner animation
+            if(!u || !p) {
+                alert('කරුණාකර Username සහ Password ඇතුළත් කරන්න!');
+                return;
+            }
+
+            // Add buffering spinner animation
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = 'Logging in <span class="spinner"></span>';
+            }
+
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'adminLogin', username: u, password: p })
+            })
+            .then(res => res.json())
+            .then(response => {
                 if(btn) {
-                    btn.disabled = true;
-                    btn.innerHTML = 'Logging in <span class="spinner"></span>';
+                    btn.disabled = false;
+                    btn.innerHTML = 'Login 🚀';
                 }
-                
-                setTimeout(() => {
-                    localStorage.setItem('exjr_is_admin', 'true');
-                    localStorage.setItem('exjr_login_date', new Date().toDateString());
-                    if(btn) {
-                        btn.disabled = false;
-                        btn.innerHTML = 'Login 🚀';
-                    }
+                if(response.status === 'success') {
+                    localStorage.setItem('exjr_admin_token', response.token);
+                    localStorage.setItem('exjr_admin_user', u);
                     closeAdminModal();
                     openTab('adminpanel');
-                }, 1000); // 1 second smooth buffering effect
-            } else {
-                alert('Invalid Username or Password! ❌');
-            }
+                    alert('Admin Login Successful! 🎉');
+                } else {
+                    alert('Invalid Username or Password! ❌');
+                }
+            })
+            .catch(err => {
+                if(btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Login 🚀';
+                }
+                alert('Connection error! Please try again.');
+            });
         }
+
         function adminLogout() {
-            localStorage.removeItem('exjr_is_admin');
-            localStorage.removeItem('exjr_login_date');
+            adminLogoutLocally();
             openTab('about');
             alert('Logged out successfully!');
         }
+
+        function adminLogoutLocally() {
+            localStorage.removeItem('exjr_admin_token');
+            localStorage.removeItem('exjr_admin_user');
+        }
+
         function adminBackToHome() {
             openTab('about');
         }
@@ -1298,7 +1328,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             delBtn.className = 'delete-item-btn';
             delBtn.innerText = '🗑️ Delete';
             delBtn.onclick = function() { deleteResult(index); };
-            if(localStorage.getItem('exjr_is_admin') === 'true') {
+            if(localStorage.getItem('exjr_admin_token')) {
                 delBtn.style.display = 'block';
             }
 
@@ -1382,7 +1412,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             delBtn.className = 'delete-item-btn';
             delBtn.innerText = '🗑️ Delete';
             delBtn.onclick = function() { deleteSchedule(index); };
-            if(localStorage.getItem('exjr_is_admin') === 'true') {
+            if(localStorage.getItem('exjr_admin_token')) {
                 delBtn.style.display = 'block';
             }
 
