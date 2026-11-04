@@ -1066,7 +1066,8 @@ If you are passionate about gaming and eager to become a part of our growing leg
                         if(videoId.includes('youtu.be/')) videoId = videoId.split('youtu.be/')[1].split('?')[0];
                         else if(videoId.includes('watch?v=')) videoId = videoId.split('watch?v=')[1].split('&')[0];
                         else if(videoId.includes('embed/')) videoId = videoId.split('embed/')[1].split('?')[0];
-                        document.getElementById('liveFrameEmbed').src = 'https://www.youtube.com/embed/' + videoId;
+                        const embed = document.getElementById('liveFrameEmbed');
+                        if(embed) embed.src = 'https://www.youtube.com/embed/' + videoId;
                     }
                 }).catch(err => console.log(err));
 
@@ -1075,7 +1076,8 @@ If you are passionate about gaming and eager to become a part of our growing leg
 
             // Check Admin Login State
             if(localStorage.getItem('exjr_is_admin') === 'true') {
-                document.getElementById('adminTabBtn').style.display = 'inline-block';
+                const adminBtn = document.getElementById('adminTabBtn');
+                if(adminBtn) adminBtn.style.display = 'inline-block';
             }
         });
 
@@ -1098,7 +1100,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
         function renderResults(results) {
             const container = document.getElementById('adminResultsContainer');
             const binContainer = document.getElementById('recycleBinContainer');
-            container.innerHTML = '';
+            if(container) container.innerHTML = '';
             if(binContainer) binContainer.innerHTML = '';
 
             let binHasItems = false;
@@ -1127,7 +1129,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
         function renderSchedules(schedules) {
             const container = document.getElementById('adminSchedulesContainer');
             const binContainer = document.getElementById('recycleBinContainer');
-            container.innerHTML = '';
+            if(container) container.innerHTML = '';
 
             schedules.forEach((sch, idx) => {
                 if (sch.isDeleted === "true" || sch.isDeleted === true) {
@@ -1151,11 +1153,13 @@ If you are passionate about gaming and eager to become a part of our growing leg
             if(localStorage.getItem('exjr_is_admin') === 'true') {
                 openTab('adminpanel');
             } else {
-                document.getElementById('adminLoginModal').style.display = 'block';
+                const modal = document.getElementById('adminLoginModal');
+                if(modal) modal.style.display = 'block';
             }
         }
         function closeAdminModal() {
-            document.getElementById('adminLoginModal').style.display = 'none';
+            const modal = document.getElementById('adminLoginModal');
+            if(modal) modal.style.display = 'none';
         }
         function verifyAdminLogin() {
             const u = document.getElementById('adminUser').value.trim();
@@ -1163,7 +1167,8 @@ If you are passionate about gaming and eager to become a part of our growing leg
             if(u === 'exjrbyrebornff' && p === '19742@Januzz1#') {
                 localStorage.setItem('exjr_is_admin', 'true');
                 localStorage.setItem('exjr_login_date', new Date().toDateString());
-                document.getElementById('adminTabBtn').style.display = 'inline-block';
+                const adminBtn = document.getElementById('adminTabBtn');
+                if(adminBtn) adminBtn.style.display = 'inline-block';
                 closeAdminModal();
                 openTab('adminpanel');
                 alert('Admin Login Successful! 🎉');
@@ -1174,7 +1179,8 @@ If you are passionate about gaming and eager to become a part of our growing leg
         function adminLogout() {
             localStorage.removeItem('exjr_is_admin');
             localStorage.removeItem('exjr_login_date');
-            document.getElementById('adminTabBtn').style.display = 'none';
+            const adminBtn = document.getElementById('adminTabBtn');
+            if(adminBtn) adminBtn.style.display = 'none';
             openTab('about');
             alert('Logged out successfully!');
         }
@@ -1200,7 +1206,8 @@ If you are passionate about gaming and eager to become a part of our growing leg
             })
             .then(res => res.text())
             .then(response => {
-                document.getElementById('liveFrameEmbed').src = 'https://www.youtube.com/embed/' + videoId;
+                const embed = document.getElementById('liveFrameEmbed');
+                if(embed) embed.src = 'https://www.youtube.com/embed/' + videoId;
                 alert('Live Stream Link Saved to Cloud Successfully! 🔴');
             }).catch(err => alert('Error saving live link!'));
         }
@@ -1246,6 +1253,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
 
         function appendMatchResultHTML(title, status, details, imgData, uniqueId, index) {
             const container = document.getElementById('adminResultsContainer');
+            if(!container) return;
             const wrapper = document.createElement('div');
             wrapper.className = 'folder-wrapper';
 
@@ -1313,6 +1321,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
 
         function appendScheduleHTML(title, date, type, index) {
             const container = document.getElementById('adminSchedulesContainer');
+            if(!container) return;
             const wrapper = document.createElement('div');
             wrapper.className = 'folder-wrapper';
             wrapper.style.alignItems = 'flex-start';
@@ -1437,7 +1446,10 @@ If you are passionate about gaming and eager to become a part of our growing leg
 
         // 🕒 Clock & UI helpers 🕒
         function updateSriLankaClock() {
-            document.getElementById('srilanka-clock').innerText = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(new Date());
+            const clockEl = document.getElementById('srilanka-clock');
+            if(clockEl) {
+                clockEl.innerText = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(new Date());
+            }
         }
         setInterval(updateSriLankaClock, 1000);
         updateSriLankaClock();
@@ -1470,19 +1482,21 @@ If you are passionate about gaming and eager to become a part of our growing leg
         function toggleEffectsMenu() { document.getElementById('effects-list').classList.toggle('show'); }
         function toggleFolder(id) {
             let c = document.getElementById(id);
-            c.style.display = (c.style.display === "block") ? "none" : "block";
+            if(c) c.style.display = (c.style.display === "block") ? "none" : "block";
         }
 
         function openTab(tabName) {
             document.querySelectorAll(".section-content").forEach(el => el.classList.remove("active"));
             document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-            document.getElementById(tabName).classList.add("active");
+            const targetSec = document.getElementById(tabName);
+            if(targetSec) targetSec.classList.add("active");
             
             document.querySelectorAll(".tab-btn").forEach(el => {
                 if(el.getAttribute('onclick') && el.getAttribute('onclick').includes(tabName)) el.classList.add('active');
             });
 
-            document.getElementById('cartWidget').style.display = (tabName === 'topup') ? 'flex' : 'none';
+            const cart = document.getElementById('cartWidget');
+            if(cart) cart.style.display = (tabName === 'topup') ? 'flex' : 'none';
             let ts = document.querySelector('.theme-switcher'), ec = document.querySelector('.effect-controls');
             if (tabName === 'adminpanel') { if(ts) ts.style.display = 'none'; if(ec) ec.style.display = 'none'; }
             else { if(ts) ts.style.display = 'flex'; if(ec) ec.style.display = 'flex'; }
@@ -1516,7 +1530,8 @@ If you are passionate about gaming and eager to become a part of our growing leg
                         html += `<tr><td style="font-weight: bold;">${cols[0].replace(/"/g,'')}</td><td style="color: #aaa;">${cols[1].replace(/"/g,'')}</td><td style="color: var(--theme-color);">${cols[2].replace(/"/g,'')}</td><td>${cols[3].replace(/"/g,'')}</td><td>${cols[4].replace(/"/g,'')}</td></tr>`;
                     }
                 });
-                document.getElementById('roster-body').innerHTML = html || '<tr><td colspan="5">No data</td></tr>';
+                const rosterBody = document.getElementById('roster-body');
+                if(rosterBody) rosterBody.innerHTML = html || '<tr><td colspan="5">No data</td></tr>';
             });
 
         fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vR5xMPnxRcAAEJ7mVPtHQRBe4ok9DNIfch_IVhcsxxIR82EK725oFEgR-TudZY8jxp17LdhXMGTiEmz/pub?gid=0&single=true&output=csv')
@@ -1528,11 +1543,13 @@ If you are passionate about gaming and eager to become a part of our growing leg
                         html += `<tr><td style="font-weight: bold;">${cols[0].replace(/"/g,'')}</td><td class="points-text">${cols[1].replace(/"/g,'')}</td></tr>`;
                     }
                 });
-                document.getElementById('war-body').innerHTML = html || '<tr><td colspan="2">No data</td></tr>';
+                const warBody = document.getElementById('war-body');
+                if(warBody) warBody.innerHTML = html || '<tr><td colspan="2">No data</td></tr>';
             }).catch(() => {});
 
         function setEffect(type) {
             const container = document.getElementById('effect-container');
+            if(!container) return;
             container.innerHTML = ''; container.className = 'effect-layer'; 
             if (type === 'sun') container.classList.add('sunshine');
             else if (type === 'rain' || type === 'storm') {
