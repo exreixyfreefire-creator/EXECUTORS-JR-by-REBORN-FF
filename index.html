@@ -141,6 +141,13 @@
             background-color: #cc7a00 !important;
             color: #ffffff !important;
         }
+        .tab-btn.admin-tab {
+            background-color: #00ffff !important;
+            color: #000000 !important;
+            border: 2px solid #00cccc !important;
+            font-weight: bold;
+            display: none; /* Hidden by default until logged in */
+        }
 
         /* Sections Design */
         .container {
@@ -210,9 +217,8 @@
             align-items: center;
             gap: 12px;
         }
-        .pkg-price { color: #00ff00; font-weight: bold; font-size: 1.1em; }
+        .pkg-price { color: #00ff00; font-weight: bold; font-size: 1.1em; cursor: pointer; }
         
-        /* Minus / Back button inside package item */
         .pkg-minus-btn {
             background: #ff3333;
             color: #fff;
@@ -240,7 +246,7 @@
         }
         .package-item.selected .pkg-count { display: inline-block; }
 
-        /* Compact Floating Cart Button (Effect button style, visible only on Topup tab) */
+        /* Compact Floating Cart Button */
         .cart-widget {
             display: none;
             position: fixed;
@@ -269,7 +275,7 @@
             font-weight: bold;
         }
 
-        /* ✨ LIQUID GLASS SCROLL-IN SEARCH BAR ✨ */
+        /* ✨ LIQUID GLASS SEARCH BAR ✨ */
         .liquid-search-box {
             margin: 20px 0;
             opacity: 0;
@@ -401,7 +407,7 @@
         .music-btn { background: none; border: none; font-size: 1.4em; cursor: pointer; transition: 0.3s; padding: 0; margin: 0; }
         .music-btn:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px #ccff00); }
 
-        /* 🎨 THEME SWITCHER WIDGET (Fixed Vertical Top-Left, Absolute Stability) 🎨 */
+        /* 🎨 THEME SWITCHER WIDGET 🎨 */
         .theme-switcher {
             position: fixed; top: 20px; left: 20px; background: rgba(0, 0, 0, 0.9);
             border: 2px solid var(--theme-color); border-radius: 20px; padding: 12px 8px;
@@ -415,7 +421,16 @@
         }
         .theme-dot:hover { transform: scale(1.2); }
 
-        /* 📱 FULL-WIDTH SOCIAL BARS (Inside Join With Us) 📱 */
+        /* 🔑 ADMIN LOGIN BUTTON (Top Right) 🔑 */
+        .admin-login-btn {
+            position: fixed; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--theme-color); color: var(--theme-color); border-radius: 20px;
+            padding: 8px 16px; font-family: 'Oswald', sans-serif; font-size: 0.9em; text-transform: uppercase;
+            cursor: pointer; z-index: 2000; transition: 0.3s; box-shadow: 0 0 10px var(--theme-glow);
+        }
+        .admin-login-btn:hover { background: var(--theme-color); color: #000; }
+
+        /* 📱 FULL-WIDTH SOCIAL BARS 📱 */
         .social-bar-container {
             display: flex;
             flex-direction: column;
@@ -441,38 +456,19 @@
             transform: translateY(-2px);
             opacity: 0.9;
         }
-        .tiktok-bar {
-            background-color: #000000;
-            color: #ffffff;
-            border: 2px solid #333;
-        }
-        .whatsapp-bar-1 {
-            background-color: #25D366;
-            color: #000000;
-        }
-        .whatsapp-bar-2 {
-            background-color: #25D366;
-            color: #000000;
-        }
-        .whatsapp-channel-bar {
-            background-color: #128C7E;
-            color: #ffffff;
-            border: 2px solid #25D366;
-        }
+        .tiktok-bar { background-color: #000000; color: #ffffff; border: 2px solid #333; }
+        .whatsapp-bar-1, .whatsapp-bar-2 { background-color: #25D366; color: #000000; }
+        .whatsapp-channel-bar { background-color: #128C7E; color: #ffffff; border: 2px solid #25D366; }
 
-        /* Prevent Overlap on Mobile */
         @media screen and (max-width: 768px) {
-            .theme-switcher {
-                top: 10px;
-                left: 10px;
-                padding: 8px 6px;
-            }
+            .theme-switcher { top: 10px; left: 10px; padding: 8px 6px; }
+            .admin-login-btn { top: 10px; right: 10px; padding: 6px 12px; font-size: 0.8em; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 🎨 Theme Switcher Widget (Fixed Vertical Top-Left) -->
+    <!-- 🎨 Theme Switcher Widget -->
     <div class="theme-switcher">
         <span>Theme</span>
         <div class="theme-dot" style="background-color: #ccff00;" onclick="setTheme('lime')" title="Lime Green"></div>
@@ -480,7 +476,10 @@
         <div class="theme-dot" style="background-color: #00ffff;" onclick="setTheme('blue')" title="Cyber Blue"></div>
     </div>
 
-    <!-- 🎵 Background Music Audio Element & Widget (Bottom Left) -->
+    <!-- 🔑 Admin Login Button -->
+    <button class="admin-login-btn" onclick="openAdminModal()">🔑 Admin Login</button>
+
+    <!-- 🎵 Background Music Audio Element & Widget -->
     <audio id="bg-music" loop>
         <source src="ff.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
@@ -494,7 +493,7 @@
     <!-- Effect Layer Container -->
     <div id="effect-container" class="effect-layer"></div>
 
-    <!-- Floating Buttons for Effects (Bottom Right - Toggleable) -->
+    <!-- Floating Buttons for Effects -->
     <div class="effect-controls">
         <button class="effect-btn" onclick="toggleEffectsMenu()" title="Toggle Effects">🪄</button>
         <div id="effects-list" class="effects-list">
@@ -525,10 +524,10 @@
             <button class="tab-btn" onclick="openTab('schedule')">Match Schedule</button>
             <button class="tab-btn" onclick="openTab('results')">Match Results</button>
             <button class="tab-btn" onclick="openTab('rules')">Join & Rules</button>
-            <!-- 🔴 8th Tab: Watch Our Tournaments Live 🔴 -->
             <button class="tab-btn live-tab" onclick="openTab('live')">🔴 Watch Our Tournaments Live</button>
-            <!-- 🛒 9th Tab: Topup Store 🛒 -->
             <button class="tab-btn topup-tab" onclick="openTab('topup')">💎 BENA x CHALA TOPUP STORE</button>
+            <!-- Admin Panel Tab (Hidden until login) -->
+            <button id="adminTabBtn" class="tab-btn admin-tab" onclick="openTab('adminpanel')">⚙️ Admin Panel</button>
         </div>
     </header>
 
@@ -554,7 +553,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             </div>
         </div>
 
-        <!-- 🤝 2. JOIN WITH US SECTION (NEW TAB) 🤝 -->
+        <!-- 🤝 2. JOIN WITH US SECTION 🤝 -->
         <div id="join" class="section-content">
             <h2><span class="neon-text">|</span> Connect With Us</h2>
             <div class="custom-box">
@@ -618,7 +617,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
             <h2><span class="neon-text">|</span> Guild Roster (Live Stats)</h2>
             <p>මේ දත්ත කෙලින්ම අපේ Google Sheet එකෙන් Auto Update වෙනවා.</p>
             
-            <!-- ✨ Liquid Glass Search Bar for Roster -->
             <div id="search-box-players" class="liquid-search-box">
                 <input type="text" id="playerSearchInput" class="liquid-search-input" placeholder="🔍 Search Player by Name or UID..." onkeyup="filterRosterTable()">
             </div>
@@ -644,7 +642,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
             <h2><span class="neon-text">|</span> Guild Wars Top Scorers</h2>
             <p>මෙම ලකුණු සටහන අලුත් Google Sheet එක මගින් Auto Update වේ.</p>
             
-            <!-- ✨ Liquid Glass Search Bar for Guild Wars -->
             <div id="search-box-wars" class="liquid-search-box">
                 <input type="text" id="warSearchInput" class="liquid-search-input" placeholder="🔍 Search Hero by Player Name..." onkeyup="filterWarTable()">
             </div>
@@ -672,6 +669,8 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <p><strong>JR Leader</strong> - EX xKENZO</p>
                 <p><strong>GL Leader</strong> - EX xTHINU</p>
             </div>
+            <!-- Dynamic Admin Added Schedules Container -->
+            <div id="adminSchedulesContainer"></div>
         </div>
 
         <!-- 🔴 6. MATCH RESULTS SECTION 🔴 -->
@@ -687,7 +686,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <p><strong>Mode:</strong> Battle Royale</p>
                 <p><strong>MAP:</strong> BERMUDA</p>
                 <p><strong>DATE:</strong> AUGUST 25 2026</p>
-                
                 <div class="match-photos">
                     <img src="aug25booyah.jpg" alt="Match Photo 1">
                 </div>
@@ -702,7 +700,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <p><strong>Type:</strong> NO Rules Custom Match</p>
                 <p><strong>MAP:</strong> BERMUDA</p>
                 <p><strong>DATE:</strong> Unconfirmed</p>
-                
                 <div class="match-photos">
                     <img src="slssdefeat.jpg" alt="Match Photo 1">
                 </div>
@@ -724,6 +721,9 @@ If you are passionate about gaming and eager to become a part of our growing leg
                     <img src="exgl2.jpg" alt="Match Photo 2">
                 </div>
             </div>
+
+            <!-- Dynamic Admin Added Match Results Folders -->
+            <div id="adminResultsContainer"></div>
         </div>
 
         <!-- 7. JOIN & RULES SECTION -->
@@ -751,15 +751,48 @@ If you are passionate about gaming and eager to become a part of our growing leg
                 <h3>🔴 EXECUTORS JR LIVE STREAM</h3>
                 <p>අපේ ලයිව් මැච් එක මෙතනින් නරඹන්න!</p>
                 
-                <!-- YouTube Live Embed Player -->
+                <!-- Dynamic YouTube Live Embed Player -->
                 <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; margin-top: 15px; border-radius: 8px; overflow: hidden; border: 2px solid var(--theme-color);">
-                    <iframe src="https://www.youtube.com/embed/live_stream?channel=UC2hBb5UrK6gAO1i3B" 
+                    <iframe id="liveFrameEmbed" src="https://www.youtube.com/embed/live_stream?channel=UC2hBb5UrK6gAO1i3B" 
                             title="YouTube Live Player" 
                             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                             allowfullscreen>
                     </iframe>
                 </div>
+            </div>
+        </div>
+
+        <!-- ⚙️ 10. ADMIN PANEL SECTION (Visible when logged in) ⚙️ -->
+        <div id="adminpanel" class="section-content">
+            <h2><span class="neon-text">|</span> Admin Control Center</h2>
+            <div class="custom-box">
+                <h3 style="color: var(--theme-color);">🔴 Update YouTube Live Link</h3>
+                <p>ඔබේ YouTube Live Video ID එක (හෝ Channel ID) මෙහි ඇතුළත් කර Save කරන්න:</p>
+                <input type="text" id="adminLiveInput" class="liquid-search-input" placeholder="Enter YouTube Video ID (e.g. dQw4w9WgXcQ)">
+                <button class="whatsapp-buy-btn" style="margin-top: 10px;" onclick="saveLiveStreamLink()">Save Live Link 💾</button>
+            </div>
+
+            <div class="custom-box" style="margin-top: 20px;">
+                <h3 style="color: var(--theme-color);">🏆 Add 4th+ Match Result Preset</h3>
+                <input type="text" id="resMatchTitle" class="liquid-search-input" placeholder="Match Title (e.g. 4th Match - A vs B)" style="margin-bottom: 10px;">
+                <input type="text" id="resMatchStatus" class="liquid-search-input" placeholder="Result Status (e.g. 🔥 BOOYAH! (VICTORY))" style="margin-bottom: 10px;">
+                <input type="text" id="resMatchDetails" class="liquid-search-input" placeholder="Details (Mode, Map, Date, etc.)" style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; color: var(--theme-color);">Upload Match Screenshot (SS):</label>
+                <input type="file" id="resMatchImage" accept="image/*" class="liquid-search-input" style="margin-bottom: 10px;">
+                <button class="whatsapp-buy-btn" onclick="addNewMatchResultPreset()">Add Match Result Preset ➕</button>
+            </div>
+
+            <div class="custom-box" style="margin-top: 20px;">
+                <h3 style="color: var(--theme-color);">📅 Add Match Schedule Preset</h3>
+                <input type="text" id="schTitle" class="liquid-search-input" placeholder="Match Title (e.g. EXECUTORS JR vs TEAM X)" style="margin-bottom: 10px;">
+                <input type="text" id="schDate" class="liquid-search-input" placeholder="Date & Time (e.g. 2026 November 10 | 09:00 PM)" style="margin-bottom: 10px;">
+                <input type="text" id="schType" class="liquid-search-input" placeholder="Type / Leaders Info" style="margin-bottom: 10px;">
+                <button class="whatsapp-buy-btn" onclick="addNewSchedulePreset()">Add Schedule Preset ➕</button>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="whatsapp-buy-btn" style="background-color: #ff3333; color: #fff; max-width: 200px;" onclick="adminLogout()">Log Out 🚪</button>
             </div>
         </div>
 
@@ -943,12 +976,27 @@ If you are passionate about gaming and eager to become a part of our growing leg
         </div>
     </div>
 
-    <!-- 🛒 Compact Floating Cart Button (Effect button style, visible only on Topup tab) -->
+    <!-- 🛒 Compact Floating Cart Button -->
     <div id="cartWidget" class="cart-widget" onclick="sendToWhatsapp()">
         <span>🛒 <span id="cartTotalPrice" style="color: #00ff00;">LKR 0</span> 💬</span>
     </div>
 
-    <!-- Popup Modal -->
+    <!-- Admin Login Modal Popup -->
+    <div id="adminLoginModal" class="modal">
+      <div class="modal-content" style="max-width: 400px;">
+        <span class="close-btn" onclick="closeAdminModal()">&times;</span>
+        <h2 class="neon-text" style="margin-top: 0; text-align: center;">Admin Login</h2>
+        <div style="margin-top: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #aaa;">Username:</label>
+            <input type="text" id="adminUser" class="liquid-search-input" placeholder="Username" style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #aaa;">Password:</label>
+            <input type="password" id="adminPass" class="liquid-search-input" placeholder="Password" style="margin-bottom: 20px;">
+            <button class="whatsapp-buy-btn" onclick="verifyAdminLogin()">Login 🚀</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup Modal for Player Details -->
     <div id="profileModal" class="modal">
       <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -969,6 +1017,188 @@ If you are passionate about gaming and eager to become a part of our growing leg
     </div>
 
     <script>
+        // 💾 Persistent Storage Initialization on Page Load 💾
+        window.addEventListener('DOMContentLoaded', () => {
+            // Restore Live Link
+            const savedLiveId = localStorage.getItem('exjr_live_id');
+            if(savedLiveId) {
+                document.getElementById('liveFrameEmbed').src = 'https://www.youtube.com/embed/' + savedLiveId;
+            }
+
+            // Restore Admin Match Results
+            const savedResults = JSON.parse(localStorage.getItem('exjr_match_results') || '[]');
+            savedResults.forEach((res, idx) => {
+                appendMatchResultHTML(res.title, res.status, res.details, res.imgData, 'res_' + idx);
+            });
+
+            // Restore Admin Schedules
+            const savedSchedules = JSON.parse(localStorage.getItem('exjr_schedules') || '[]');
+            savedSchedules.forEach((sch) => {
+                appendScheduleHTML(sch.title, sch.date, sch.type);
+            });
+
+            // Check Admin Login State
+            if(localStorage.getItem('exjr_is_admin') === 'true') {
+                document.getElementById('adminTabBtn').style.display = 'inline-block';
+            }
+        });
+
+        // 🔑 Admin Login / Logout Logic 🔑
+        function openAdminModal() {
+            if(localStorage.getItem('exjr_is_admin') === 'true') {
+                openTab('adminpanel');
+            } else {
+                document.getElementById('adminLoginModal').style.display = 'block';
+            }
+        }
+        function closeAdminModal() {
+            document.getElementById('adminLoginModal').style.display = 'none';
+        }
+        function verifyAdminLogin() {
+            const u = document.getElementById('adminUser').value.trim();
+            const p = document.getElementById('adminPass').value.trim();
+            if(u === 'exjrbyrebornff' && p === '19742@Januzz1#') {
+                localStorage.setItem('exjr_is_admin', 'true');
+                document.getElementById('adminTabBtn').style.display = 'inline-block';
+                closeAdminModal();
+                openTab('adminpanel');
+                alert('Admin Login Successful! 🎉');
+            } else {
+                alert('Invalid Username or Password! ❌');
+            }
+        }
+        function adminLogout() {
+            localStorage.removeItem('exjr_is_admin');
+            document.getElementById('adminTabBtn').style.display = 'none';
+            openTab('about');
+            alert('Logged out successfully!');
+        }
+
+        // 🔴 Save Live Stream Link
+        function saveLiveStreamLink() {
+            const linkInput = document.getElementById('adminLiveInput').value.trim();
+            if(!linkInput) {
+                alert('Please enter a valid YouTube Video ID or URL!');
+                return;
+            }
+            // Extract video ID if full URL is pasted
+            let videoId = linkInput;
+            if(linkInput.includes('youtu.be/')) {
+                videoId = linkInput.split('youtu.be/')[1].split('?')[0];
+            } else if(linkInput.includes('watch?v=')) {
+                videoId = linkInput.split('watch?v=')[1].split('&')[0];
+            } else if(linkInput.includes('embed/')) {
+                videoId = linkInput.split('embed/')[1].split('?')[0];
+            }
+
+            localStorage.setItem('exjr_live_id', videoId);
+            document.getElementById('liveFrameEmbed').src = 'https://www.youtube.com/embed/' + videoId;
+            alert('Live Stream Link Saved Successfully! 🔴');
+        }
+
+        // 🏆 Add Match Result Preset
+        function addNewMatchResultPreset() {
+            const title = document.getElementById('resMatchTitle').value.trim();
+            const status = document.getElementById('resMatchStatus').value.trim();
+            const details = document.getElementById('resMatchDetails').value.trim();
+            const fileInput = document.getElementById('resMatchImage');
+
+            if(!title || !status) {
+                alert('Please enter Match Title and Result Status!');
+                return;
+            }
+
+            if(fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgData = e.target.result;
+                    saveAndRenderResult(title, status, details, imgData);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveAndRenderResult(title, status, details, '');
+            }
+        }
+
+        function saveAndRenderResult(title, status, details, imgData) {
+            const uniqueId = 'admin_res_' + Date.now();
+            const newRes = { title, status, details, imgData, id: uniqueId };
+
+            let savedResults = JSON.parse(localStorage.getItem('exjr_match_results') || '[]');
+            savedResults.push(newRes);
+            localStorage.setItem('exjr_match_results', JSON.stringify(savedResults));
+
+            appendMatchResultHTML(title, status, details, imgData, uniqueId);
+            alert('Match Result Preset Added Successfully! 🏆');
+            document.getElementById('resMatchTitle').value = '';
+            document.getElementById('resMatchStatus').value = '';
+            document.getElementById('resMatchDetails').value = '';
+            document.getElementById('resMatchImage').value = '';
+        }
+
+        function appendMatchResultHTML(title, status, details, imgData, uniqueId) {
+            const container = document.getElementById('adminResultsContainer');
+            const btn = document.createElement('button');
+            btn.className = 'folder-btn';
+            btn.onclick = function() { toggleFolder(uniqueId); };
+            btn.innerHTML = `<span>📁 ${title}</span> <span>▼</span>`;
+
+            const content = document.createElement('div');
+            content.id = uniqueId;
+            content.className = 'folder-content';
+            
+            let colorStyle = status.toLowerCase().includes('defeat') ? 'color: #ff3333;' : 'color: #00ff00;';
+            let html = `<h3 style="${colorStyle}">${status}</h3>`;
+            if(details) {
+                const parts = details.split(',');
+                parts.forEach(p => {
+                    html += `<p><strong>${p.trim()}</strong></p>`;
+                });
+            }
+            if(imgData) {
+                html += `<div class="match-photos"><img src="${imgData}" alt="Match Photo"></div>`;
+            }
+            content.innerHTML = html;
+
+            container.appendChild(btn);
+            container.appendChild(content);
+        }
+
+        // 📅 Add Match Schedule Preset
+        function addNewSchedulePreset() {
+            const title = document.getElementById('schTitle').value.trim();
+            const date = document.getElementById('schDate').value.trim();
+            const type = document.getElementById('schType').value.trim();
+
+            if(!title || !date) {
+                alert('Please enter Match Title and Date/Time!');
+                return;
+            }
+
+            let savedSchedules = JSON.parse(localStorage.getItem('exjr_schedules') || '[]');
+            savedSchedules.push({ title, date, type });
+            localStorage.setItem('exjr_schedules', JSON.stringify(savedSchedules));
+
+            appendScheduleHTML(title, date, type);
+            alert('Match Schedule Preset Added Successfully! 📅');
+            document.getElementById('schTitle').value = '';
+            document.getElementById('schDate').value = '';
+            document.getElementById('schType').value = '';
+        }
+
+        function appendScheduleHTML(title, date, type) {
+            const container = document.getElementById('adminSchedulesContainer');
+            const box = document.createElement('div');
+            box.className = 'custom-box';
+            box.style.marginTop = '15px';
+            box.innerHTML = `
+                <h3>${title}</h3>
+                <p>📅 <strong>Date:</strong> ${date}</p>
+                <p>📍 <strong>Type:</strong> ${type}</p>
+            `;
+            container.appendChild(box);
+        }
+
         // 🛒 Topup Store Cart Logic with Quantity & Minus Support 🛒
         let selectedPackages = [];
 
@@ -984,7 +1214,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
         }
 
         function removePackage(name, price) {
-            event.stopPropagation(); // Prevent triggering addPackage on parent click
+            event.stopPropagation();
             const existing = selectedPackages.find(p => p.name === name);
             if (existing) {
                 existing.qty -= 1;
@@ -997,13 +1227,11 @@ If you are passionate about gaming and eager to become a part of our growing leg
         }
 
         function updatePackageUI() {
-            // Reset all items visual state
             document.querySelectorAll('.package-item').forEach(item => {
                 item.classList.remove('selected');
                 item.querySelector('.pkg-count').innerText = 'x0';
             });
 
-            // Apply state based on selectedPackages array
             selectedPackages.forEach(p => {
                 const items = document.querySelectorAll('.package-item');
                 items.forEach(item => {
@@ -1015,7 +1243,6 @@ If you are passionate about gaming and eager to become a part of our growing leg
             });
         }
 
-        // Make package items clickable anywhere on the row except minus button
         document.querySelectorAll('.package-item').forEach(item => {
             item.addEventListener('click', function(e) {
                 if(e.target.classList.contains('pkg-minus-btn')) return;
@@ -1159,7 +1386,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
             }
         }
 
-        // Tab Switching & Modal Logic (Updated to control Cart Widget visibility)
+        // Tab Switching & Modal Logic
         function openTab(tabName) {
             const sections = document.getElementsByClassName("section-content");
             for (let i = 0; i < sections.length; i++) sections[i].classList.remove("active");
