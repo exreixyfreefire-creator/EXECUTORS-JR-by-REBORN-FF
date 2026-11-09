@@ -644,7 +644,7 @@
         
         <!-- 🕒 Sri Lanka Live Clock -->
         <div class="guild-clock">
-            🕒  Time: <span id="srilanka-clock">00:00:00 AM</span>
+            🕒 Time: <span id="srilanka-clock">00:00:00 AM</span>
         </div>
 
         <div class="tab-container" id="mainTabContainer">
@@ -1172,7 +1172,7 @@ If you are passionate about gaming and eager to become a part of our growing leg
 
         // 💾 Initialization & Cloud Session Check on Load 💾
         window.addEventListener('DOMContentLoaded', () => {
-            // Fetch Live Link from Google Sheet & configure iframe / direct watch button
+            // Fetch Live Link from Google Sheet & configure iframe / direct watch button properly
             fetch(WEB_APP_URL + '?action=getLive')
                 .then(res => res.text())
                 .then(link => {
